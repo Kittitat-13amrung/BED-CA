@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\YoutubeVideoController;
-use App\Models\YoutubeVideo;
+use App\Http\Controllers\ChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +22,5 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
+
+Route::apiResource('/channels', ChannelController::class)->only(['index', 'show']);

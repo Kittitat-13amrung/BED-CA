@@ -12,10 +12,14 @@ class YoutubeVideoCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
+
+    //  rename the data object to a different name
+    public static $wrap = 'videos';
+
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'videos' => $this->collection
             
         ];
     }

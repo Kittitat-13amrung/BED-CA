@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\YoutubeVideoCollection;
+use App\Http\Resources\YoutubeVideoResource;
 use App\Models\YoutubeVideo;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class YoutubeVideoController extends Controller
 {
@@ -26,7 +29,15 @@ class YoutubeVideoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request);
+        $video = YoutubeVideo::create($request->only([
+            'title', 'description', 'duration', 'likes', 'dislikes', 'views',
+        ]));
+
+        $video->uuid = "watch?v=".Str::uuid();
+        $video->thumbnail = "https://picsum.photos/360/360";
+
+        return new YoutubeVideoResource($video);
     }
 
     /**
@@ -37,7 +48,7 @@ class YoutubeVideoController extends Controller
      */
     public function show(YoutubeVideo $youtubeVideo)
     {
-        //
+        return new YoutubeVideoResource($youtubeVideo);
     }
 
     /**
@@ -49,7 +60,13 @@ class YoutubeVideoController extends Controller
      */
     public function update(Request $request, YoutubeVideo $youtubeVideo)
     {
-        //
+        // update the youtube video data with the new request
+        $youtubeVideo->update($request->only([
+            'title', 'description', 'duration', 'likes', 'dislikes', 'views',
+        ]));
+
+        // then return the newly updated resource to the body
+        return new YoutubeVideoResource($youtubeVideo);
     }
 
     /**
@@ -60,6 +77,8 @@ class YoutubeVideoController extends Controller
      */
     public function destroy(YoutubeVideo $youtubeVideo)
     {
-        //
+        $youtubeVideo->delete();
+
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }
