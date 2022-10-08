@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\YoutubeVideoCollection;
+use App\Http\Resources\YoutubeVideoShortenResource;
 
-class ChannelResource extends JsonResource
+class ChannelWithVideoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,6 +19,8 @@ class ChannelResource extends JsonResource
 
     public function toArray($request)
     {
+        $videos = YoutubeVideoShortenResource::collection($this->whenLoaded('videos'));
+
         // $videoHidden = $videos->map(function ($video) {
         //     return $video->only('title', 'uuid', 'likes', 'dislikes', 'views');
         // });
@@ -27,11 +29,10 @@ class ChannelResource extends JsonResource
         // dd($videoHidden);
 
         return [
-            'id' => $this->id, 
             'name' => $this->name,
             'subscribers' => $this->subscribers,
             'created_at' => $this->created_at,
-            'videos' => YoutubeVideoShortenResource::collection($this->videos)
+            'videos' => $videos
         ];
     }
 }

@@ -18,23 +18,23 @@ class ChannelSeeder extends Seeder
      */
     public function run()
     {
-        Channel::factory()->times(3)->create();
-        // Channel::factory()->count(10)->create()->each(function ($channel) {
-        //     YoutubeVideo::factory()->count(10)->create([
-        //         'channel_id' => $channel->id
-        //     ])->each(function ($video) {
-        //         Comments::factory()->count(10)->create([
-        //             'youtube_video_id' => $video->id
-        //         ])->each(function ($comment) {
+        // Channel::factory()->times(3)->create();
+        Channel::factory()->count(10)->create()->each(function ($channel) {
+            YoutubeVideo::factory()->count(10)->create([
+                'channel_id' => $channel->id
+            ])->each(function ($video) {
+                Comments::factory()->count(10)->create([
+                    'youtube_video_id' => $video->id
+                ])->each(function ($comment) {
 
-        //             $rng = fake()->numberBetween($min = 1, $max = 3);
+                    $rng = fake()->numberBetween($min = 1, $max = 3);
 
-        //             Channel_Comment::create([
-        //                 'channel_id' => $rng,
-        //                 'comment_id' => $comment->id
-        //             ]);
-        //         });
-        //     });
-        // });
+                    Channel_Comment::create([
+                        'channel_id' => $rng,
+                        'comment_id' => $comment->id
+                    ]);
+                });
+            });
+        });
     }
 }

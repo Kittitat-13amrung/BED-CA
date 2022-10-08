@@ -3,10 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\ChannelResource;
-use App\Http\Resources\CommentResource;
 
-class YoutubeVideoResource extends JsonResource
+class YoutubeVideoShortenResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,7 +17,6 @@ class YoutubeVideoResource extends JsonResource
 
     public function toArray($request)
     {
-        $channel = new ChannelResource($this->channel);
 
         return [
             'title' => $this->title,
@@ -29,8 +26,6 @@ class YoutubeVideoResource extends JsonResource
             'dislikes' => $this->dislikes,
             'views' => $this->views,
             'link' => "youtube.com/" . $this->uuid,
-            'comments' => CommentResource::collection($this->comments),
-            'channel' => $channel->only('name', 'subscribers', 'created_at'),
         ];
     }
 

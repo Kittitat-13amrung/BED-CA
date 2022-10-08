@@ -15,4 +15,8 @@ class Channel extends Model
     public function videos() {
         return $this->hasMany(YoutubeVideo::class);
     }
+
+    public function comments() {
+        return $this->belongsToMany(Comments::class, 'channel_comment');
+    }
 }
