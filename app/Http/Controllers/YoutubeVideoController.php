@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\YoutubeVideoCollection;
 use App\Http\Resources\YoutubeVideoResource;
 use App\Models\YoutubeVideo;
 use Illuminate\Http\Request;
@@ -18,7 +17,12 @@ class YoutubeVideoController extends Controller
      */
     public function index()
     {
-        return new YoutubeVideoCollection(YoutubeVideo::all());
+        // Eager loading video data with relationships
+        $videos = YoutubeVideo::with(['comments', 'channel']);
+
+        // Return data encapsulated in a collection paginated by 10
+        return YoutubeVideoResource::collection($videos->paginate(10))->response();
+        // return new YoutubeVideoCollection(YoutubeVideo::all());
     }
 
     /**
@@ -29,15 +33,25 @@ class YoutubeVideoController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
-        $video = YoutubeVideo::create($request->only([
-            'title', 'description', 'duration', 'likes', 'dislikes', 'views',
-        ]));
 
-        $video->uuid = "watch?v=".Str::uuid();
+        // Validating the request from POST method
+        $validation = $request->validate([
+            'title' => 'required|max:255', 
+            'description' ,
+            'duration' => 'integer', 
+            'likes' => 'integer', 
+            'dislikes' => 'integer', 
+            'views' => 'integer',
+
+        ]);
+
+        // create a new data with the validated data
+        $video = YoutubeVideo::create($validation);
+        // assigning fake uuid and thumbnail
+        $video->uuid = "watch?v=".Str::random(10);
         $video->thumbnail = "https://picsum.photos/360/360";
 
-        return new YoutubeVideoResource($video);
+        return response()->json($video, Response::HTTP_CREATED); // returns the created data in JSON format
     }
 
     /**
@@ -48,7 +62,8 @@ class YoutubeVideoController extends Controller
      */
     public function show(YoutubeVideo $youtubeVideo)
     {
-        return new YoutubeVideoResource($youtubeVideo);
+        // eager loads the video with selected ID and its relationships
+        return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
     }
 
     /**
@@ -60,10 +75,19 @@ class YoutubeVideoController extends Controller
      */
     public function update(Request $request, YoutubeVideo $youtubeVideo)
     {
+        // Validating the request from PUT method
+        $validation = $request->validate([
+            'title' => 'required|max:255', 
+            'description' ,
+            'duration' => 'integer', 
+            'likes' => 'integer', 
+            'dislikes' => 'integer', 
+            'views' => 'integer',
+
+        ]);
+
         // update the youtube video data with the new request
-        $youtubeVideo->update($request->only([
-            'title', 'description', 'duration', 'likes', 'dislikes', 'views',
-        ]));
+        $youtubeVideo->update($validation);
 
         // then return the newly updated resource to the body
         return new YoutubeVideoResource($youtubeVideo);
@@ -77,8 +101,9 @@ class YoutubeVideoController extends Controller
      */
     public function destroy(YoutubeVideo $youtubeVideo)
     {
+        // delete the selected data
         $youtubeVideo->delete();
-
+        // then response back with HTTP response of code 204
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

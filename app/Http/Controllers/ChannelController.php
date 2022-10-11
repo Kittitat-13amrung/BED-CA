@@ -6,6 +6,8 @@ use App\Http\Resources\ChannelCollection;
 use App\Http\Resources\ChannelResource;
 use App\Models\Channel;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class ChannelController extends Controller
 {
@@ -16,7 +18,11 @@ class ChannelController extends Controller
      */
     public function index()
     {
-        return new ChannelCollection(Channel::all());
+        // Eager loading channel data with its relationships
+        $channels = Channel::with(['videos', 'comments']);
+
+        // responds in JSON format the collection of data
+        return ChannelResource::collection($channels->paginate(50))->response();
     }
 
     /**
@@ -38,7 +44,8 @@ class ChannelController extends Controller
      */
     public function show(Channel $channel)
     {
-        return new ChannelResource($channel);
+        // eager loads the channel with selected ID and its relationships
+        return new ChannelResource($channel->loadMissing(['videos', 'videos.comments']));
     }
 
     /**

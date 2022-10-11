@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\YoutubeVideoCollection;
+use Illuminate\Support\Carbon;
 
 class ChannelResource extends JsonResource
 {
@@ -19,19 +20,15 @@ class ChannelResource extends JsonResource
 
     public function toArray($request)
     {
-        // $videoHidden = $videos->map(function ($video) {
-        //     return $video->only('title', 'uuid', 'likes', 'dislikes', 'views');
-        // });
-
-
-        // dd($videoHidden);
+        // eager-load all the videos created by the channel
+        $videos = YoutubeVideoResource::collection($this->whenLoaded('videos'));
 
         return [
             'id' => $this->id, 
             'name' => $this->name,
             'subscribers' => $this->subscribers,
-            'created_at' => $this->created_at,
-            'videos' => YoutubeVideoShortenResource::collection($this->videos)
+            'created_at' => Carbon::parse($this->created_at)->format('d/m/Y'),
+            'videos' => $videos
         ];
     }
 }

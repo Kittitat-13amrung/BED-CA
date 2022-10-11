@@ -10,13 +10,31 @@ class Channel extends Model
 {
     use HasFactory;
 
+    // allow mass assignment of the attributes
     protected $guarded = [];
 
+        /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    // set default values for following attributes
+    protected $attributes = [
+        'subscribers' => 0,
+    ];
+
+    // connects a One to Many relationship (a channel has many videos) 
     public function videos() {
         return $this->hasMany(YoutubeVideo::class);
     }
 
+    // connects a Many to Many relationship (channels have comments)
     public function comments() {
-        return $this->belongsToMany(Comments::class, 'channel_comment');
+        return $this->belongsToMany(Comments::class, 'channel_comment', 'channel_id', 'comment_id');
     }
 }

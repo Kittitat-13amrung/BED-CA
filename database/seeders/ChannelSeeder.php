@@ -18,19 +18,26 @@ class ChannelSeeder extends Seeder
      */
     public function run()
     {
+        // generate a bunch of channel without any relationships
+        // or youtube video and comments attached to it
         // Channel::factory()->times(3)->create();
-        Channel::factory()->count(10)->create()->each(function ($channel) {
+
+
+        // generate chanels with videos and comments attached as relationships
+        // this populates each channel with 10 videos and in each video
+        // also populates it with a load of comments
+        Channel::factory()->count(3)->create()->each(function ($channel) {
             YoutubeVideo::factory()->count(10)->create([
-                'channel_id' => $channel->id
+                'channel_id' => $channel->id // attach the channel id to the video
             ])->each(function ($video) {
                 Comments::factory()->count(10)->create([
-                    'youtube_video_id' => $video->id
+                    'youtube_video_id' => $video->id // attach the video id that comment belongs to
                 ])->each(function ($comment) {
 
-                    $rng = fake()->numberBetween($min = 1, $max = 3);
+                    $rng = fake()->numberBetween($min = 1, $max = 3); //random number between 1 to 3
 
                     Channel_Comment::create([
-                        'channel_id' => $rng,
+                        'channel_id' => $rng, // $rng is used to randomised channel who commented
                         'comment_id' => $comment->id
                     ]);
                 });

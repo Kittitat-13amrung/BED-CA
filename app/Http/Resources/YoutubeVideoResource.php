@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\CommentResource;
+use Illuminate\Support\Carbon;
 
 class YoutubeVideoResource extends JsonResource
 {
@@ -19,18 +20,23 @@ class YoutubeVideoResource extends JsonResource
 
     public function toArray($request)
     {
-        $channel = new ChannelResource($this->channel);
+        // eager loading channel and comments
+        // as part of the video's relationships
+        $channel = new ChannelResource($this->whenLoaded('channel'));
+        $comments = CommentResource::collection($this->whenLoaded('comments'));
 
         return [
+            'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
+            'created_at' => Carbon::parse($this->created_at)->format('d/m/Y'), //parse creation date to d/m/y format
             'duration' => $this->duration . " minutes",
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
             'views' => $this->views,
             'link' => "youtube.com/" . $this->uuid,
-            'comments' => CommentResource::collection($this->comments),
-            'channel' => $channel->only('name', 'subscribers', 'created_at'),
+            'channel' => $channel,
+            'comments' => $comments,
         ];
     }
 

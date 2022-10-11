@@ -15,12 +15,13 @@ class CommentResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => $this->id,
-            'comment' => $this->comment,
+            'text' => $this->comment,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
-            'created_at' => $this->created_at,
+            'commented_at' => $this->created_at->diffForHumans(),
             'channel' => ChannelResource::collection($this->channels),
         ];
     }

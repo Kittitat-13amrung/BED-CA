@@ -10,8 +10,10 @@ class Channel_Comment extends Model
     
     use HasFactory;
 
+    // manually set the table name
     protected $table = 'channel_comment';
     
+    // allow attributes to be mass assigned
     protected $guarded = [];
 
 

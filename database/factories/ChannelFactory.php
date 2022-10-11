@@ -20,11 +20,11 @@ class ChannelFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'subscribers' => fake()->numberBetween($min = 0, $max = 100000000),
+            'subscribers' => fake()->numberBetween($min = 0, $max = 100000000), //randomised numbers from 0 to billions
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
-            'created_at' => fake()->dateTimeThisDecade()
+            'created_at' => fake()->dateTimeThisDecade() // randomised the dateTime somewhere in this decade
         ];
     }
 

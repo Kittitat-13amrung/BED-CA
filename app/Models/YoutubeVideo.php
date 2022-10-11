@@ -23,13 +23,16 @@ class YoutubeVideo extends Model
         'description' => '',
         'duration' => 1,
         'thumbnail' => '',
-        'uuid' => ''
+        'uuid' => '',
+        'channel_id' => 2,
     ];
 
+    // videos belongs to channel
     public function channel() {
         return $this->belongsTo(Channel::class);
     }
 
+    // videos has many comments
     public function comments() {
         return $this->hasMany(Comments::class);
     }
