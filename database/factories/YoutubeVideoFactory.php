@@ -23,8 +23,6 @@ class YoutubeVideoFactory extends Factory
             'likes' => fake()->numberBetween($min = 0, $max = 1000000),
             'dislikes' => fake()->numberBetween($min = 0, $max = 1000000),
             'views' => fake()->numberBetween($min = 0, $max = 10000000),
-            // 'channel_name' => fake()->userName(),
-            // 'channel_profile' => fake()->imageUrl(360, 360),
             'thumbnail' => fake()->imageUrl(640, 480, 'thumbnail', true),
             'uuid' => "watch?v=" . fake()->uuid(),
             'created_at' => fake()->dateTimeThisDecade()

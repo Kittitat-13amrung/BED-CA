@@ -8,6 +8,31 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
+
+    /**
+     * Display a listing of the resource.
+     *
+ * @OA\Get(
+ *     path="/api/youtubeVideos",
+ *     description="Displays all the youtube videos",
+ *     tags={"Youtube Videos"},
+     *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation, Returns a list of Books in JSON format"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
+     *
+     * @return \Illuminate\Http\Response
+     */
+
 class YoutubeVideoController extends Controller
 {
     /**
@@ -28,6 +53,32 @@ class YoutubeVideoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @OA\Post(
+     *      path="/api/youtubeVideos",
+     *      operationId="store",
+     *      tags={"Youtube Videos"},
+     *      summary="Create a new youtube video",
+     *      description="Stores the video in the DB",
+     *      @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"title", "description", "duration", "likes", "dislikes", "views"},
+     *            @OA\Property(property="title", type="string", format="string", example="Sample Title"),
+     *            @OA\Property(property="description", type="string", format="string", example="A long description about this great book"),
+     *            @OA\Property(property="duration", type="integer", format="integer", example="60"),
+     *            @OA\Property(property="likes", type="integer", format="integer", example="200"),
+     *            @OA\Property(property="dislikes", type="integer", format="integer", example="300") ,
+     *            @OA\Property(property="views", type="integer", format="integer", example="1") 
+     *          )
+     *      ),
+     *     @OA\Response(
+     *          response=200, description="Success",
+     *          @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=""),
+     *             @OA\Property(property="data",type="object")
+     *          )
+     *     )
+     * )
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -72,6 +123,51 @@ class YoutubeVideoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Put(
+     *      path="/api/youtubeVideos/{id}",
+     *      operationId="put",
+     *      tags={"Youtube Videos"},
+     *      summary="Update a youtube video by id",
+     *      description="update and store the updated data to specified video in the DB",
+     *      @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"title", "description", "duration", "likes", "dislikes", "views"},
+     *            @OA\Property(property="title", type="string", format="string", example="Sample Title"),
+     *            @OA\Property(property="description", type="string", format="string", example="A long description about this great book"),
+     *            @OA\Property(property="duration", type="integer", format="integer", example="60"),
+     *            @OA\Property(property="likes", type="integer", format="integer", example="200"),
+     *            @OA\Property(property="dislikes", type="integer", format="integer", example="300") ,
+     *            @OA\Property(property="views", type="integer", format="integer", example="1") 
+     *          )
+     *      ),
+     *     @OA\Response(
+     *          response=400, description="Invalid video ID",
+     *          @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=""),
+     *             @OA\Property(property="data",type="object")
+     *          ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+     *          ),
+        *      @OA\Response(
+        *          response=404,
+        *          description="Video not found",
+        *      ),
+        *      @OA\Response(
+        *          response=405,
+        *          description="Validation exception"
+        *      )
+     *          
+     *     )
+     * )
      */
     public function update(Request $request, YoutubeVideo $youtubeVideo)
     {

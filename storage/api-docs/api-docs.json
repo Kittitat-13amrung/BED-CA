@@ -1,0 +1,210 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Youtube Video API",
+        "description": "Kittitat's Youtube Video API",
+        "contact": {
+            "email": "n00201327@iadt.ie"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/youtubeVideos": {
+            "get": {
+                "tags": [
+                    "Youtube Videos"
+                ],
+                "summary": "Display a listing of the resource.",
+                "description": "Displays all the youtube videos",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation, Returns a list of Books in JSON format"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Youtube Videos"
+                ],
+                "summary": "Create a new youtube video",
+                "description": "Stores the video in the DB",
+                "operationId": "store",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "duration",
+                                    "likes",
+                                    "dislikes",
+                                    "views"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Sample Title"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "A long description about this great book"
+                                    },
+                                    "duration": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "60"
+                                    },
+                                    "likes": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "200"
+                                    },
+                                    "dislikes": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "300"
+                                    },
+                                    "views": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/youtubeVideos/{id}": {
+            "put": {
+                "tags": [
+                    "Youtube Videos"
+                ],
+                "summary": "Update a youtube video by id",
+                "description": "update and store the updated data to specified video in the DB",
+                "operationId": "put",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "duration",
+                                    "likes",
+                                    "dislikes",
+                                    "views"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Sample Title"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "A long description about this great book"
+                                    },
+                                    "duration": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "60"
+                                    },
+                                    "likes": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "200"
+                                    },
+                                    "dislikes": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "300"
+                                    },
+                                    "views": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid video ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Video not found"
+                    },
+                    "405": {
+                        "description": "Validation exception"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "default": {
+                "description": "Welcome page"
+            }
+        }
+    }
+}

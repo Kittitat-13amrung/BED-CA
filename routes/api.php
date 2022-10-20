@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+// Created youtubeVideos URL with all the CRUD functionality
 Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
 
+// Created channel URL with only index and show function attached
 Route::apiResource('/channels', ChannelController::class)->only(['index', 'show']);
