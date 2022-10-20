@@ -14,7 +14,9 @@ use Illuminate\Support\Str;
      *
  * @OA\Get(
  *     path="/api/youtubeVideos",
- *     description="Displays all the youtube videos",
+ *     description="Displays all the youtube videos with its relationship such as:
+ *       the channel that created it.
+ *       ",
  *     tags={"Youtube Videos"},
      *      @OA\Response(
         *          response=200,
@@ -108,6 +110,31 @@ class YoutubeVideoController extends Controller
     /**
      * Display the specified resource.
      *
+     * @OA\Get(
+    *     path="/api/youtubeVideos/{id}",
+    *     description="Gets a video by its ID",
+    *     tags={"Youtube Videos"},
+    *          @OA\Parameter(
+        *          name="id",
+        *          description="Video id",
+        *          required=true,
+        *          in="path",
+        *          @OA\Schema(
+        *              type="integer")
+     *          ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
      * @return \Illuminate\Http\Response
      */
@@ -192,6 +219,25 @@ class YoutubeVideoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @OA\Delete(
+     *    path="/api/youtubeVideos/{id}",
+     *    operationId="destroy",
+     *    tags={"Youtube Videos"},
+     *    summary="Delete a Video",
+     *    description="Delete Video",
+     *    @OA\Parameter(name="id", in="path", description="Id of a Video", required=true,
+     *        @OA\Schema(type="integer")
+     *    ),
+     *    @OA\Response(
+     *         response=Response::HTTP_NO_CONTENT,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *         @OA\Property(property="status_code", type="integer", example="204"),
+     *         @OA\Property(property="data",type="object")
+     *          ),
+     *       )
+     *      )
+     *  )
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
      * @return \Illuminate\Http\Response
      */
@@ -200,6 +246,6 @@ class YoutubeVideoController extends Controller
         // delete the selected data
         $youtubeVideo->delete();
         // then response back with HTTP response of code 204
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response()->json(null, Response::HTTP_OK);
     }
 }

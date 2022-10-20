@@ -13,7 +13,23 @@ class ChannelController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @OA\Get(
+        *     path="/api/channels",
+        *     description="Displays all the youtube videos",
+        *     tags={"Channels"},
+        *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation, Returns a list of Books in JSON format"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -39,6 +55,31 @@ class ChannelController extends Controller
     /**
      * Display the specified resource.
      *
+        * @OA\Get(
+        *     path="/api/channels/{id}",
+        *     description="Gets a channel by its ID",
+        *     tags={"Channels"},
+        *          @OA\Parameter(
+        *          name="id",
+        *          description="Channel id",
+        *          required=true,
+        *          in="path",
+        *          @OA\Schema(
+        *              type="integer")
+        *          ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */

@@ -13,13 +13,66 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/channels": {
+            "get": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Display a listing of the resource.",
+                "description": "Displays all the youtube videos",
+                "operationId": "be223b25163500bac9e4ec9d02150af6",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation, Returns a list of Books in JSON format"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/channels/{id}": {
+            "get": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Display the specified resource.",
+                "description": "Gets a channel by its ID",
+                "operationId": "ddb5c9deb38fca62c45ad8ac2ee85a4a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Channel id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/api/youtubeVideos": {
             "get": {
                 "tags": [
                     "Youtube Videos"
                 ],
                 "summary": "Display a listing of the resource.",
-                "description": "Displays all the youtube videos",
+                "description": "Displays all the youtube videos with its relationship such as:\n *       the channel that created it.\n *       ",
                 "responses": {
                     "200": {
                         "description": "Successful operation, Returns a list of Books in JSON format"
@@ -113,6 +166,36 @@
             }
         },
         "/api/youtubeVideos/{id}": {
+            "get": {
+                "tags": [
+                    "Youtube Videos"
+                ],
+                "summary": "Display the specified resource.",
+                "description": "Gets a video by its ID",
+                "operationId": "5b85c2afa115dc9c8692ed462f88004a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Video id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
             "put": {
                 "tags": [
                     "Youtube Videos"
@@ -195,6 +278,46 @@
                     },
                     "405": {
                         "description": "Validation exception"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Youtube Videos"
+                ],
+                "summary": "Delete a Video",
+                "description": "Delete Video",
+                "operationId": "destroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of a Video",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": "204"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
