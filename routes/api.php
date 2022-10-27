@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\YoutubeVideoController;
 use App\Http\Controllers\ChannelController;
+use App\Models\YoutubeVideo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,8 @@ use Illuminate\Support\Facades\Route;
 
 // Created youtubeVideos URL with all the CRUD functionality
 Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
+
+Route::get('/youtubeVideos/{id}/comments', [YoutubeVideoController::class, 'showComments'])->name('showComments');
 
 // Created channel URL with only index and show function attached
 Route::apiResource('/channels', ChannelController::class)->only(['index', 'show']);

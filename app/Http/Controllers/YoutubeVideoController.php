@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\YoutubeVideoResource;
+use App\Http\Resources\CommentResource;
 use App\Models\YoutubeVideo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -206,6 +207,7 @@ class YoutubeVideoController extends Controller
             'likes' => 'integer', 
             'dislikes' => 'integer', 
             'views' => 'integer',
+            'thumbnail' =>"url"
 
         ]);
 
@@ -247,5 +249,11 @@ class YoutubeVideoController extends Controller
         $youtubeVideo->delete();
         // then response back with HTTP response of code 204
         return response()->json(null, Response::HTTP_OK);
+    }
+
+    public function showComments($id) {
+        $comments = YoutubeVideo::findOrFail($id)->comments;
+
+        return CommentResource::collection($comments);
     }
 }

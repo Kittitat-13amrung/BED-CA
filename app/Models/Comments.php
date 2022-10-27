@@ -12,7 +12,12 @@ class Comments extends Model
     use HasFactory;
 
     // allow attributes to be mass assigned
-    protected $guarded = [];
+    protected $fillable = [
+        'text',
+        'likes',
+        'dislikes',
+        'commented_at'
+    ];
 
     // comments made by channels
     public function channels() {

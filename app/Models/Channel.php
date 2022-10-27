@@ -10,8 +10,12 @@ class Channel extends Model
 {
     use HasFactory;
 
-    // allow mass assignment of the attributes
-    protected $guarded = [];
+    // allow mass assignment of the attributes specified below
+    protected $fillable = [
+        'name',
+        'subscribers',
+        'created_at'
+    ];
 
         /**
      * The attributes that should be hidden for serialization.

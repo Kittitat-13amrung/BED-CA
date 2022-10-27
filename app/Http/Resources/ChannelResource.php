@@ -15,19 +15,18 @@ class ChannelResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
-    //  rename the data object to a different name
-    public static $wrap = 'channel';
 
     public function toArray($request)
     {
+        // dd($this->videosWithCount());
         // eager-load all the videos created by the channel
-        $videos = YoutubeVideoResource::collection($this->whenLoaded('videos'));
-
+        $videos = new YoutubeVideoCollection($this->whenLoaded('videos'));
         return [
             'id' => $this->id, 
             'name' => $this->name,
             'subscribers' => $this->subscribers,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/Y'),
+            'hasVideo' => $this->videos->count(),
             'videos' => $videos
         ];
     }

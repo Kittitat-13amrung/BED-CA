@@ -7,6 +7,7 @@ use App\Http\Resources\ChannelResource;
 
 class CommentResource extends JsonResource
 {
+
     /**
      * Transform the resource into an array.
      *
@@ -22,7 +23,7 @@ class CommentResource extends JsonResource
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
             'commented_at' => $this->created_at->diffForHumans(),
-            'channel' => ChannelResource::collection($this->channels),
+            'channel' => new ChannelResource($this->channels[0]),
         ];
     }
 }

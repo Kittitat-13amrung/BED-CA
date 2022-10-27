@@ -11,8 +11,17 @@ class YoutubeVideo extends Model
 {
     use HasFactory;
 
-    // allow the data in this model mass assignable
-    protected $guarded = [];
+    // allow the data in this model mass assignable on specified attributes below
+    protected $fillable = [
+        'title',
+        'description',
+        'likes',
+        'dislikes',
+        'duration',
+        'views',
+        'thumbnail',
+        'created_at'
+    ];
 
     // setting default value for each attribute
     protected $attributes = [

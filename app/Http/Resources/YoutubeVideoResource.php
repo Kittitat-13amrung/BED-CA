@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\CommentResource;
 use Illuminate\Support\Carbon;
+use Mockery\Undefined;
 
 class YoutubeVideoResource extends JsonResource
 {
@@ -15,8 +16,6 @@ class YoutubeVideoResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-
-    public static $wrap = 'video';
 
     public function toArray($request)
     {
@@ -30,11 +29,12 @@ class YoutubeVideoResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'created_at' => Carbon::parse($this->created_at)->format('d/m/Y'), //parse creation date to d/m/y format
-            'duration' => $this->duration . " minutes",
+            'duration' => $this->duration,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
             'views' => $this->views,
             'link' => "youtube.com/" . $this->uuid,
+            'thumbnail' => $this->thumbnail,
             'channel' => $channel,
             'comments' => $comments,
         ];

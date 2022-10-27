@@ -38,7 +38,7 @@ class ChannelController extends Controller
         $channels = Channel::with(['videos', 'comments']);
 
         // responds in JSON format the collection of data
-        return ChannelResource::collection($channels->paginate(50))->response();
+        return new ChannelCollection($channels->paginate(50));
     }
 
     /**
