@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ChannelCollection;
 use App\Http\Resources\ChannelResource;
+use App\Http\Resources\YoutubeVideoResource;
 use App\Models\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -39,6 +40,45 @@ class ChannelController extends Controller
 
         // responds in JSON format the collection of data
         return new ChannelCollection($channels->paginate(50));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @OA\Get(
+    *     path="/api/channels/{id}/videos",
+    *     description="Gets videos by its channel ID",
+    *     tags={"Channels"},
+    *          @OA\Parameter(
+        *          name="id",
+        *          description="Video id",
+        *          required=true,
+        *          in="path",
+        *          @OA\Schema(
+        *              type="integer")
+     *          ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getVideos($id)
+    {
+
+        $videos = Channel::findOrFail($id)->videos;
+
+        return YoutubeVideoResource::collection($videos);
     }
 
     /**

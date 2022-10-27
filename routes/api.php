@@ -25,7 +25,11 @@ use Illuminate\Support\Facades\Route;
 // Created youtubeVideos URL with all the CRUD functionality
 Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
 
+// Added a method to retrieve comments belong to a channel
 Route::get('/youtubeVideos/{id}/comments', [YoutubeVideoController::class, 'showComments'])->name('showComments');
 
 // Created channel URL with only index and show function attached
 Route::apiResource('/channels', ChannelController::class)->only(['index', 'show']);
+
+// Added another method to retrieve videos belong to a channel
+Route::get('/channels/{id}/videos', [ChannelController::class, 'getVideos'])->name('showVideos');

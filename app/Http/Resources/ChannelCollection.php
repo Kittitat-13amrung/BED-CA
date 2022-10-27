@@ -13,13 +13,10 @@ class ChannelCollection extends ResourceCollection
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
-    //  rename the data object to a different name
-    public static $wrap = 'channels';
-
     public function toArray($request)
     {
         return [
-            'channels' => $this->collection
+            'data' => $this->collection
             
         ];
     }

@@ -37,11 +37,13 @@ class YoutubeVideo extends Model
     ];
 
     // videos belongs to channel
+    // return channel of the video
     public function channel() {
         return $this->belongsTo(Channel::class);
     }
 
     // videos has many comments
+    // return comments in the video
     public function comments() {
         return $this->hasMany(Comments::class);
     }

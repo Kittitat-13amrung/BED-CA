@@ -15,12 +15,10 @@ class ChannelResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
 
-
     public function toArray($request)
     {
-        // dd($this->videosWithCount());
         // eager-load all the videos created by the channel
-        $videos = new YoutubeVideoCollection($this->whenLoaded('videos'));
+        $videos = YoutubeVideoResource::collection($this->whenLoaded('videos'));
         return [
             'id' => $this->id, 
             'name' => $this->name,
