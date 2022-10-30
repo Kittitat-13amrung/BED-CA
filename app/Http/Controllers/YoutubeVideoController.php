@@ -97,7 +97,7 @@ class YoutubeVideoController extends Controller
         // Validating the request from POST method
         $validation = $request->validate([
             'title' => 'required|max:255', 
-            'description' ,
+            'description' => '',
             'duration' => 'integer', 
             'likes' => 'integer', 
             'dislikes' => 'integer', 
