@@ -18,9 +18,7 @@ use Illuminate\Support\Str;
      * 
  * @OA\Get(
  *     path="/api/youtubeVideos",
- *     description="Displays all the youtube videos with its relationship such as:
- *       the channel that created it.
- *       ",
+ *     description="Displays all the youtube videos with its relationship.",
  *      summary="Display all videos",
  *     tags={"Youtube Videos"},
 *     @OA\RequestBody(

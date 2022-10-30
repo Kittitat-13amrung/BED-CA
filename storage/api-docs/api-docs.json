@@ -125,7 +125,7 @@
                     "Youtube Videos"
                 ],
                 "summary": "Display all videos",
-                "description": "Displays all the youtube videos with its relationship such as:\n *       the channel that created it.\n *       ",
+                "description": "Displays all the youtube videos with its relationship.",
                 "requestBody": {
                     "content": {
                         "application/json": {
