@@ -11,8 +11,7 @@ use Illuminate\Routing\Controller as BaseController;
  * @OA\Info(
  *      version="1.0.0",
  *      title="Youtube Video API",
- *      description="This is a Youtube Video API that allow users to retrieve generated data about youtube video(s)
- *      as a JSON format.",
+ *      description="This is a Youtube Video API that allow users to retrieve generated data about youtube video(s) as a JSON format.",
  *      @OA\Contact(
  *          email="n00201327@iadt.ie"
  *      ),
@@ -20,8 +19,23 @@ use Illuminate\Routing\Controller as BaseController;
  *         name="Apache 2.0",
  *         url="https://www.apache.org/licenses/LICENSE-2.0.html"
  *     ),
+ *    
+ *         
+ *     
  * 
- * )
+ * ),
+ * 
+ *     @OA\Tag(
+ *         name="Youtube Videos",
+ *         description="Retrieving everything about youtube video(s)"
+ *     ),
+ *     
+ *     @OA\Tag(
+ *         name="Channels",
+ *         description="Retrieving everything about a specific channel or channels"
+ *     ), 
+ * 
+ * 
  * @OA/Get(
      *   path="/"
      *   description="Home page",
@@ -124,9 +138,27 @@ use Illuminate\Routing\Controller as BaseController;
  *                       format="integer",
  *                       example="100",
  *                       description="the amount of video"
- *                     )
- *                   ),
- *                      @OA\Schema(
+ *                     ),
+ *                     @OA\Property(
+ *                       property="videos",
+ *                       ref="#/components/schemas/youtube_video")
+ *                   ), 
+ *                   
+     *   @OA\Schema(
+ *                 schema="successful_delete",
+ *                 @OA\Property(
+ *                     property="msessage",
+ *                     type="string",
+ *                     example="The data has been successfully deleted"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="status",
+ *                     type="integer",
+ *                     example="202"
+ *                 ),
+ *      ),
+ *      
+ *                  @OA\Schema(
  *                     schema="Comment",
  *                     type="object",
  *                     @OA\Property(

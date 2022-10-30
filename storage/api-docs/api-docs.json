@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Youtube Video API",
-        "description": "This is a Youtube Video API that allow users to retrieve generated data about youtube video(s)\n *      as a JSON format.",
+        "description": "This is a Youtube Video API that allow users to retrieve generated data about youtube video(s) as a JSON format.",
         "contact": {
             "email": "n00201327@iadt.ie"
         },
@@ -23,7 +23,14 @@
                 "operationId": "be223b25163500bac9e4ec9d02150af6",
                 "responses": {
                     "200": {
-                        "description": "Successful operation, Returns a list of Books in JSON format"
+                        "description": "Successful operation, Returns a list of Books in JSON format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -55,7 +62,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/youtube_video"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -87,7 +101,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/youtube_video"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -103,7 +124,7 @@
                 "tags": [
                     "Youtube Videos"
                 ],
-                "summary": "Display a listing of the resource.",
+                "summary": "Display all videos",
                 "description": "Displays all the youtube videos with its relationship such as:\n *       the channel that created it.\n *       ",
                 "requestBody": {
                     "content": {
@@ -132,7 +153,7 @@
                     "Youtube Videos"
                 ],
                 "summary": "Create a new youtube video",
-                "description": "Stores the video in the DB",
+                "description": "update and store the updated data to a specific youtube video in the database",
                 "operationId": "store",
                 "requestBody": {
                     "required": true,
@@ -203,14 +224,14 @@
                 "tags": [
                     "Youtube Videos"
                 ],
-                "summary": "Display the specified resource.",
-                "description": "Gets a video by its ID",
+                "summary": "Gets a youtube video by its ID",
+                "description": "Retreive a youtube video specified by the ID parameter and displays it in a JSON format.",
                 "operationId": "5b85c2afa115dc9c8692ed462f88004a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Video id",
+                        "description": "video id",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -219,7 +240,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/youtube_video"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -234,7 +262,7 @@
                     "Youtube Videos"
                 ],
                 "summary": "Update a youtube video by id",
-                "description": "update and store the updated data to specified video in the DB",
+                "description": "update and store the updated data to a specific youtube video in the database",
                 "operationId": "put",
                 "requestBody": {
                     "required": true,
@@ -287,30 +315,24 @@
                     }
                 },
                 "responses": {
-                    "400": {
-                        "description": "Invalid video ID",
+                    "201": {
+                        "description": "Video updated",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "integer",
-                                            "example": ""
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/youtube_video"
                                 }
                             }
                         }
                     },
-                    "404": {
-                        "description": "Video not found"
+                    "400": {
+                        "description": "Invalid video ID"
                     },
-                    "405": {
-                        "description": "Validation exception"
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 }
             },
@@ -318,8 +340,8 @@
                 "tags": [
                     "Youtube Videos"
                 ],
-                "summary": "Delete a Video",
-                "description": "Delete Video",
+                "summary": "Delete a youtube video by its ID",
+                "description": "Delete a youtube video specified by the ID parameter.",
                 "operationId": "destroy",
                 "parameters": [
                     {
@@ -333,24 +355,18 @@
                     }
                 ],
                 "responses": {
-                    "204": {
+                    "202": {
                         "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": "204"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/successful_delete"
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Video not found"
                     }
                 }
             }
@@ -360,8 +376,8 @@
                 "tags": [
                     "Youtube Videos"
                 ],
-                "summary": "Display the specified resource.",
-                "description": "Gets comments by its video ID",
+                "summary": "Gets comments by its youtube video ID",
+                "description": "Retreive comments from a youtube video specified by the ID parameter and displays it in a JSON format.",
                 "operationId": "096a9f120a1259a3a23b85893bf3783f",
                 "parameters": [
                     {
@@ -376,7 +392,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -470,6 +493,22 @@
                         "type": "integer",
                         "format": "integer",
                         "example": "100"
+                    },
+                    "videos": {
+                        "$ref": "#/components/schemas/youtube_video"
+                    }
+                },
+                "type": "object"
+            },
+            "successful_delete": {
+                "properties": {
+                    "msessage": {
+                        "type": "string",
+                        "example": "The data has been successfully deleted"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "202"
                     }
                 },
                 "type": "object"
@@ -518,7 +557,20 @@
             },
             "403": {
                 "description": "Forbidden"
+            },
+            "404": {
+                "description": "Video not found"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Youtube Videos",
+            "description": "Retrieving everything about youtube video(s)"
+        },
+        {
+            "name": "Channels",
+            "description": "Retrieving everything about a specific channel or channels"
+        }
+    ]
 }

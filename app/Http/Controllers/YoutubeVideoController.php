@@ -14,11 +14,14 @@ use Illuminate\Support\Str;
      * Display a listing of the resource.
      *
      * 
+     * 
+     * 
  * @OA\Get(
  *     path="/api/youtubeVideos",
  *     description="Displays all the youtube videos with its relationship such as:
  *       the channel that created it.
  *       ",
+ *      summary="Display all videos",
  *     tags={"Youtube Videos"},
 *     @OA\RequestBody(
  *         @OA\JsonContent(ref="#/components/schemas/youtube_video")
@@ -56,7 +59,6 @@ class YoutubeVideoController extends Controller
 
         // Return data encapsulated in a collection paginated by 10
         return YoutubeVideoResource::collection($videos->paginate(10))->response();
-        // return new YoutubeVideoCollection(YoutubeVideo::all());
     }
 
     /**
@@ -67,7 +69,7 @@ class YoutubeVideoController extends Controller
      *      operationId="store",
      *      tags={"Youtube Videos"},
      *      summary="Create a new youtube video",
-     *      description="Stores the video in the DB",
+     *      description="update and store the updated data to a specific youtube video in the database",
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -109,7 +111,9 @@ class YoutubeVideoController extends Controller
         $video->uuid = "watch?v=".Str::random(10);
         $video->thumbnail = "https://picsum.photos/360/360";
 
-        return response()->json($video, Response::HTTP_CREATED); // returns the created data in JSON format
+        $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
+
+        return response()->json($uploadedVideo, Response::HTTP_CREATED); // returns the created data in JSON format
     }
 
     /**
@@ -117,11 +121,12 @@ class YoutubeVideoController extends Controller
      *
      * @OA\Get(
     *     path="/api/youtubeVideos/{id}",
-    *     description="Gets a video by its ID",
+    *     description="Retreive a youtube video specified by the ID parameter and displays it in a JSON format.",
+    *     summary="Gets a youtube video by its ID",
     *     tags={"Youtube Videos"},
     *          @OA\Parameter(
         *          name="id",
-        *          description="Video id",
+        *          description="video id",
         *          required=true,
         *          in="path",
         *          @OA\Schema(
@@ -129,7 +134,8 @@ class YoutubeVideoController extends Controller
      *          ),
         *      @OA\Response(
         *          response=200,
-        *          description="Successful operation"
+        *          description="Successful operation",
+        *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
         *       ),
         *      @OA\Response(
         *          response=401,
@@ -161,7 +167,7 @@ class YoutubeVideoController extends Controller
      *      operationId="put",
      *      tags={"Youtube Videos"},
      *      summary="Update a youtube video by id",
-     *      description="update and store the updated data to specified video in the DB",
+     *      description="update and store the updated data to a specific youtube video in the database",
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -175,10 +181,11 @@ class YoutubeVideoController extends Controller
      *          )
      *      ),
      *     @OA\Response(
+     *          response=Response::HTTP_CREATED, description="Video updated",
+     *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *          ),
+     *     @OA\Response(
      *          response=400, description="Invalid video ID",
-     *          @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=""),
-     *             @OA\Property(property="data",type="object")
      *          ),
         *      @OA\Response(
         *          response=401,
@@ -192,10 +199,6 @@ class YoutubeVideoController extends Controller
         *      @OA\Response(
         *          response=404,
         *          description="Video not found",
-        *      ),
-        *      @OA\Response(
-        *          response=405,
-        *          description="Validation exception"
         *      )
      *          
      *     )
@@ -219,7 +222,7 @@ class YoutubeVideoController extends Controller
         $youtubeVideo->update($validation);
 
         // then return the newly updated resource to the body
-        return new YoutubeVideoResource($youtubeVideo);
+        return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
     }
 
     /**
@@ -229,19 +232,20 @@ class YoutubeVideoController extends Controller
      *    path="/api/youtubeVideos/{id}",
      *    operationId="destroy",
      *    tags={"Youtube Videos"},
-     *    summary="Delete a Video",
-     *    description="Delete Video",
+     *    summary="Delete a youtube video by its ID",
+     *    description="Delete a youtube video specified by the ID parameter.",
      *    @OA\Parameter(name="id", in="path", description="Id of a Video", required=true,
      *        @OA\Schema(type="integer")
      *    ),
      *    @OA\Response(
-     *         response=Response::HTTP_NO_CONTENT,
+     *         response=Response::HTTP_ACCEPTED,
      *         description="Success",
-     *         @OA\JsonContent(
-     *         @OA\Property(property="status_code", type="integer", example="204"),
-     *         @OA\Property(property="data",type="object")
-     *          ),
-     *       )
+     *         @OA\JsonContent(ref="#/components/schemas/successful_delete"),
+     *       ),
+     *    @OA\Response(
+     *         response=Response::HTTP_NOT_FOUND,
+     *         description="Video not found"
+     *       ),
      *      )
      *  )
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
@@ -252,7 +256,7 @@ class YoutubeVideoController extends Controller
         // delete the selected data
         $youtubeVideo->delete();
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
-        return response()->json(["Message" => "The video has been successfully delete", "status" => "204"], Response::HTTP_OK);
+        return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -260,7 +264,8 @@ class YoutubeVideoController extends Controller
      *
      * @OA\Get(
     *     path="/api/youtubeVideos/{id}/comments",
-    *     description="Gets comments by its video ID",
+    *     description="Retreive comments from a youtube video specified by the ID parameter and displays it in a JSON format.",
+    *     summary="Gets comments by its youtube video ID",
     *     tags={"Youtube Videos"},
     *          @OA\Parameter(
         *          name="id",
@@ -272,7 +277,8 @@ class YoutubeVideoController extends Controller
      *          ),
         *      @OA\Response(
         *          response=200,
-        *          description="Successful operation"
+        *          description="Successful operation",
+        *          @OA\JsonContent(ref="#/components/schemas/Comment")
         *       ),
         *      @OA\Response(
         *          response=401,
