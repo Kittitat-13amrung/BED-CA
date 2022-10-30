@@ -13,15 +13,21 @@ use Illuminate\Support\Str;
     /**
      * Display a listing of the resource.
      *
+     * 
  * @OA\Get(
  *     path="/api/youtubeVideos",
  *     description="Displays all the youtube videos with its relationship such as:
  *       the channel that created it.
  *       ",
  *     tags={"Youtube Videos"},
+*     @OA\RequestBody(
+ *         @OA\JsonContent(ref="#/components/schemas/youtube_video")
+ *     ),
      *      @OA\Response(
         *          response=200,
-        *          description="Successful operation, Returns a list of Books in JSON format"
+        *          description="Successful operation, Returns a list of Videos in JSON format",
+        *          @OA\JsonContent(ref="#/components/schemas/youtube_video"),
+        *          ),
         *       ),
         *      @OA\Response(
         *          response=401,
@@ -76,9 +82,7 @@ class YoutubeVideoController extends Controller
      *      ),
      *     @OA\Response(
      *          response=200, description="Success",
-     *          @OA\JsonContent(
-     *             @OA\Property(property="status", type="integer", example=""),
-     *             @OA\Property(property="data",type="object")
+ *              @OA\JsonContent(ref="#/components/schemas/youtube_video")
      *          )
      *     )
      * )
@@ -247,10 +251,41 @@ class YoutubeVideoController extends Controller
     {
         // delete the selected data
         $youtubeVideo->delete();
-        // then response back with HTTP response of code 204
-        return response()->json(null, Response::HTTP_OK);
+        // then response back with HTTP response of code 200 to display message to indicate a succesful action
+        return response()->json(["Message" => "The video has been successfully delete", "status" => "204"], Response::HTTP_OK);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @OA\Get(
+    *     path="/api/youtubeVideos/{id}/comments",
+    *     description="Gets comments by its video ID",
+    *     tags={"Youtube Videos"},
+    *          @OA\Parameter(
+        *          name="id",
+        *          description="Video ID",
+        *          required=true,
+        *          in="path",
+        *          @OA\Schema(
+        *              type="integer")
+     *          ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Successful operation"
+        *       ),
+        *      @OA\Response(
+        *          response=401,
+        *          description="Unauthenticated",
+        *      ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Forbidden"
+        *      )
+ * )
+     * @param  $id
+     * @return \Illuminate\Http\Response
+     */
     public function showComments($id) {
         $comments = YoutubeVideo::findOrFail($id)->comments;
 
