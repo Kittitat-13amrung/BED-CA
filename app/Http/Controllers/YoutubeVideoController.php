@@ -21,9 +21,6 @@ use Illuminate\Support\Str;
  *     description="Displays all the youtube videos with its relationship.",
  *      summary="Display all videos",
  *     tags={"Youtube Videos"},
-*     @OA\RequestBody(
- *         @OA\JsonContent(ref="#/components/schemas/youtube_video")
- *     ),
      *      @OA\Response(
         *          response=200,
         *          description="Successful operation, Returns a list of Videos in JSON format",

@@ -126,15 +126,7 @@
                 ],
                 "summary": "Display all videos",
                 "description": "Displays all the youtube videos with its relationship.",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/youtube_video"
-                            }
-                        }
-                    }
-                },
+                "requestBody": {},
                 "responses": {
                     "200": {
                         "description": "Successful operation, Returns a list of Videos in JSON format",
