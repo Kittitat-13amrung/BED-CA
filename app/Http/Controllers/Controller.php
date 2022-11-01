@@ -43,6 +43,8 @@ use Illuminate\Routing\Controller as BaseController;
      *     response="default",
      *     description="Welcome page",
      *   ),
+     *   
+     *   create components to be reused in different Controllers
      *   @OA\Schema(
  *                 schema="youtube_video",
  *                 @OA\Property(

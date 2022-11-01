@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 
 
     /**
-     * Display a listing of the resource.
      *
      * 
      * 
@@ -43,7 +42,7 @@ use Illuminate\Support\Str;
 class YoutubeVideoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Returns all the videos in the database.
      *
      * @return \Illuminate\Http\Response
      */
@@ -57,7 +56,7 @@ class YoutubeVideoController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created video in the database.
      *
      * @OA\Post(
      *      path="/api/youtubeVideos",
@@ -105,14 +104,14 @@ class YoutubeVideoController extends Controller
         // assigning fake uuid and thumbnail
         $video->uuid = "watch?v=".Str::random(10);
         $video->thumbnail = "https://picsum.photos/360/360";
-
+        // declare a variable to store the array of data
         $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
 
-        return response()->json($uploadedVideo, Response::HTTP_CREATED); // returns the created data in JSON format
+        return response()->json($uploadedVideo, Response::HTTP_CREATED); // returns the array in JSON format to the user
     }
 
     /**
-     * Display the specified resource.
+     * Display a youtube video by its ID.
      *
      * @OA\Get(
     *     path="/api/youtubeVideos/{id}",
@@ -151,7 +150,7 @@ class YoutubeVideoController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified video that existed in the database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
@@ -221,7 +220,7 @@ class YoutubeVideoController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified video from the database.
      *
      * @OA\Delete(
      *    path="/api/youtubeVideos/{id}",
@@ -248,14 +247,14 @@ class YoutubeVideoController extends Controller
      */
     public function destroy(YoutubeVideo $youtubeVideo)
     {
-        // delete the selected data
+        // delete the selected video
         $youtubeVideo->delete();
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
         return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);
     }
 
     /**
-     * Display the specified resource.
+     * Display all the comments from a video using its ID.
      *
      * @OA\Get(
     *     path="/api/youtubeVideos/{id}/comments",
@@ -288,8 +287,10 @@ class YoutubeVideoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function showComments($id) {
+        // retreive all the comments using the id implemented from the URL
         $comments = YoutubeVideo::findOrFail($id)->comments;
 
+        // returns the findings as an array of objects to the user.
         return CommentResource::collection($comments);
     }
 }

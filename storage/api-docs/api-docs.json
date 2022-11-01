@@ -18,7 +18,7 @@
                 "tags": [
                     "Channels"
                 ],
-                "summary": "Display a listing of the resource.",
+                "summary": "Display channels retrieved from the database.",
                 "description": "Displays all the youtube videos",
                 "operationId": "be223b25163500bac9e4ec9d02150af6",
                 "responses": {
@@ -46,7 +46,7 @@
                 "tags": [
                     "Channels"
                 ],
-                "summary": "Display the specified resource.",
+                "summary": "Display all the videos made by the channel by retreiving its ID.",
                 "description": "Gets videos by its channel ID",
                 "operationId": "c12cf4dc0da93cf936e12ea1b43bccdd",
                 "parameters": [
@@ -85,7 +85,7 @@
                 "tags": [
                     "Channels"
                 ],
-                "summary": "Display the specified resource.",
+                "summary": "Display the specified channel resource using its ID.",
                 "description": "Gets a channel by its ID",
                 "operationId": "ddb5c9deb38fca62c45ad8ac2ee85a4a",
                 "parameters": [
@@ -126,7 +126,6 @@
                 ],
                 "summary": "Display all videos",
                 "description": "Displays all the youtube videos with its relationship.",
-                "requestBody": {},
                 "responses": {
                     "200": {
                         "description": "Successful operation, Returns a list of Videos in JSON format",

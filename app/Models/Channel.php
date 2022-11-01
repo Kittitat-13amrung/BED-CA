@@ -42,12 +42,4 @@ class Channel extends Model
         return $this->belongsToMany(Comments::class, 'channel_comment', 'channel_id', 'comment_id');
     }
 
-    /**
-         * Get the user that owns the Channel
-         *
-         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-         */
-    public function comment() {
-        return $this->belongsTo(Comment::class, 'channel_id');
-    }
 }

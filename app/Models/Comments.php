@@ -25,10 +25,6 @@ class Comments extends Model
         return $this->belongsToMany(Channel::class, 'channel_comment', 'comment_id', 'channel_id');
     }
 
-    public function channel() {
-        return $this->hasOne(Channel::class, 'comment_id');
-    }
-
     // comments belong in many videos
     // return the video that comments belong to
     public function video() {

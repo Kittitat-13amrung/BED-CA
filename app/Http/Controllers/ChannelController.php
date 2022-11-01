@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class ChannelController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display channels retrieved from the database.
      * @OA\Get(
         *     path="/api/channels",
         *     description="Displays all the youtube videos",
@@ -44,7 +44,7 @@ class ChannelController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display all the videos made by the channel by retreiving its ID.
      *
      * @OA\Get(
     *     path="/api/channels/{id}/videos",
@@ -77,9 +77,9 @@ class ChannelController extends Controller
      */
     public function getVideos($id)
     {
-
+        // retrieve the data of the channel specified by the ID parameter
         $videos = Channel::findOrFail($id)->videos;
-
+        // and returns it as a collection to the user.
         return YoutubeVideoResource::collection($videos);
     }
 
@@ -91,11 +91,11 @@ class ChannelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // To be implemented in CA2
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified channel resource using its ID.
      *
         * @OA\Get(
         *     path="/api/channels/{id}",
@@ -141,7 +141,7 @@ class ChannelController extends Controller
      */
     public function update(Request $request, Channel $channel)
     {
-        //
+        // To be implemented in CA2
     }
 
     /**
@@ -152,6 +152,6 @@ class ChannelController extends Controller
      */
     public function destroy(Channel $channel)
     {
-        //
+        // To be implemented in CA2
     }
 }

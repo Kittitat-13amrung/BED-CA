@@ -15,17 +15,15 @@ return new class extends Migration
     {
         Schema::create('youtube_videos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')->constrained('channels');
+            $table->foreignId('channel_id')->constrained('channels'); //create foreign key for Channel
             $table->string('title');
             $table->integer('likes');
             $table->integer('dislikes');
             $table->text('description');
             $table->integer('duration');
-            // $table->string('channel');
-            // $table->text('comments');
             $table->integer('views');
             $table->string('thumbnail');
-            $table->string('uuid');
+            $table->string('uuid'); //to use as links to youtube videos
             $table->timestamps();
         });
     }
