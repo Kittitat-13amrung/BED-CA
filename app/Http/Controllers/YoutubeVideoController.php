@@ -91,18 +91,20 @@ class YoutubeVideoController extends Controller
         // Validating the request from POST method
         $validation = $request->validate([
             'title' => 'required|max:255', 
-            'description' => '',
+            'description' => 'max:2000',
             'duration' => 'integer', 
             'likes' => 'integer', 
             'dislikes' => 'integer', 
             'views' => 'integer',
+            'channel_id' => 'integer'
 
         ]);
 
         // create a new data with the validated data
         $video = YoutubeVideo::create($validation);
-        // assigning fake uuid and thumbnail
+        // Create uuid for new video
         $video->uuid = "watch?v=".Str::random(10);
+        // assigning fake thumbnail
         $video->thumbnail = "https://picsum.photos/360/360";
         // declare a variable to store the array of data
         $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
@@ -203,12 +205,13 @@ class YoutubeVideoController extends Controller
         // Validating the request from PUT method
         $validation = $request->validate([
             'title' => 'required|max:255', 
-            'description' ,
+            'description' => 'max:2000',
             'duration' => 'integer', 
             'likes' => 'integer', 
             'dislikes' => 'integer', 
             'views' => 'integer',
-            'thumbnail' =>"url"
+            'thumbnail' =>"url",
+            "channel_id" => "integer"
 
         ]);
 
@@ -249,6 +252,7 @@ class YoutubeVideoController extends Controller
     {
         // delete the selected video
         $youtubeVideo->delete();
+
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
         return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);
     }
@@ -289,6 +293,10 @@ class YoutubeVideoController extends Controller
     public function showComments($id) {
         // retreive all the comments using the id implemented from the URL
         $comments = YoutubeVideo::findOrFail($id)->comments;
+
+        if(empty($comments)) {
+            return response()->json(["message" => `The video with id`, "status" => "404"]);
+        }
 
         // returns the findings as an array of objects to the user.
         return CommentResource::collection($comments);

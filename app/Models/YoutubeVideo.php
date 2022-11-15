@@ -20,7 +20,8 @@ class YoutubeVideo extends Model
         'duration',
         'views',
         'thumbnail',
-        'created_at'
+        'created_at',
+        'channel_id'
     ];
 
     // setting default value for each attribute
@@ -32,8 +33,7 @@ class YoutubeVideo extends Model
         'description' => '',
         'duration' => 1,
         'thumbnail' => '',
-        'uuid' => '',
-        'channel_id' => 2,
+        'uuid' => ''
     ];
 
     // videos belongs to channel

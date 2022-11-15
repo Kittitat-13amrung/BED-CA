@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('youtube_video_id')->constrained();
+            $table->foreignId('youtube_video_id')->references('id')->on('youtube_videos')->onUpdate('cascade')->onDelete('cascade'); ;
             $table->text('comment');
             $table->integer('likes');
             $table->integer('dislikes');

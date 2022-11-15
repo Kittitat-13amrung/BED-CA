@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('youtube_videos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')->constrained('channels'); //create foreign key for Channel
+            $table->foreignId('channel_id')->references('id')->on('channels')->onUpdate('cascade')->onDelete('cascade'); //create foreign key for Channel
             $table->string('title');
             $table->integer('likes');
             $table->integer('dislikes');

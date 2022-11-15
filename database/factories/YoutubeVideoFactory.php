@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Channel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,7 +26,8 @@ class YoutubeVideoFactory extends Factory
             'views' => fake()->numberBetween($min = 0, $max = 10000000),
             'thumbnail' => fake()->imageUrl(640, 480, 'thumbnail', true),
             'uuid' => "watch?v=" . fake()->uuid(),
-            'created_at' => fake()->dateTimeThisDecade()
+            'created_at' => fake()->dateTimeThisDecade(),
+            'channel_id' => Channel::factory()
         ];
     }
 }
