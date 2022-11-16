@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\YoutubeVideoRequest;
 use App\Http\Resources\YoutubeVideoResource;
 use App\Http\Resources\CommentResource;
 use App\Models\YoutubeVideo;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -41,6 +44,11 @@ use Illuminate\Support\Str;
 
 class YoutubeVideoController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware('auth:sanctum', ['except' => ['index', 'show', 'showComments']]);
+    }
+
     /**
      * Returns all the videos in the database.
      *
@@ -85,27 +93,35 @@ class YoutubeVideoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(YoutubeVideoRequest $request)
     {
 
         // Validating the request from POST method
-        $validation = $request->validate([
-            'title' => 'required|max:255', 
-            'description' => 'max:2000',
-            'duration' => 'integer', 
-            'likes' => 'integer', 
-            'dislikes' => 'integer', 
-            'views' => 'integer',
-            'channel_id' => 'integer'
+        // $validation = $request->validate([
+        //     'title' => 'required|max:255', 
+        //     'description' => 'max:2000',
+        //     'duration' => 'integer', 
+        //     'likes' => 'integer', 
+        //     'dislikes' => 'integer', 
+        //     'views' => 'integer',
+        //     'channel_id' => 'integer'
 
-        ]);
+        // ]);
+
+        // dd($request->user()->id);
+        $channel = $request->user()->id;
+
+        // dd([$request->all(), 'channel_id' => $channel]);
 
         // create a new data with the validated data
-        $video = YoutubeVideo::create($validation);
+        // $video = YoutubeVideo::create([$request, 'channel_id' => $channel]);
+        $video = new YoutubeVideo($request->all());
+        $video->channel_id = $channel;
         // Create uuid for new video
         $video->uuid = "watch?v=".Str::random(10);
         // assigning fake thumbnail
         $video->thumbnail = "https://picsum.photos/360/360";
+        $video->save();
         // declare a variable to store the array of data
         $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
 
@@ -200,23 +216,23 @@ class YoutubeVideoController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, YoutubeVideo $youtubeVideo)
+    public function update(YoutubeVideoRequest $request, YoutubeVideo $youtubeVideo)
     {
         // Validating the request from PUT method
-        $validation = $request->validate([
-            'title' => 'required|max:255', 
-            'description' => 'max:2000',
-            'duration' => 'integer', 
-            'likes' => 'integer', 
-            'dislikes' => 'integer', 
-            'views' => 'integer',
-            'thumbnail' =>"url",
-            "channel_id" => "integer"
+        // $validation = $request->validate([
+        //     'title' => 'required|max:255', 
+        //     'description' => 'max:2000',
+        //     'duration' => 'integer', 
+        //     'likes' => 'integer', 
+        //     'dislikes' => 'integer', 
+        //     'views' => 'integer',
+        //     'thumbnail' =>"url",
+        //     "channel_id" => "integer"
 
-        ]);
+        // ]);
 
         // update the youtube video data with the new request
-        $youtubeVideo->update($validation);
+        $youtubeVideo->update($request->all());
 
         // then return the newly updated resource to the body
         return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
@@ -292,11 +308,13 @@ class YoutubeVideoController extends Controller
      */
     public function showComments($id) {
         // retreive all the comments using the id implemented from the URL
-        $comments = YoutubeVideo::findOrFail($id)->comments;
+        try {
+            $comments = YoutubeVideo::findOrFail($id)->comments;
+        } catch(ModelNotFoundException $ex) {
+            return response()->json(["message" => "The video with id " . $id . " cannot be found in our database.", "status" => "404"], Response::HTTP_NOT_FOUND);
+        };
 
-        if(empty($comments)) {
-            return response()->json(["message" => `The video with id`, "status" => "404"]);
-        }
+        // return response()->json(["message" => `The video with id`, "status" => "404"], Response::HTTP_NOT_FOUND);
 
         // returns the findings as an array of objects to the user.
         return CommentResource::collection($comments);

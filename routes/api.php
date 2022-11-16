@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\YoutubeVideoController;
 use App\Http\Controllers\ChannelController;
 use App\Models\YoutubeVideo;
@@ -21,6 +22,15 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+// Route::middleware('auth:sanctum')->get('/channel', function($request, request) {
+//     return $request->channel();
+// });
+
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+});
 
 // Created youtubeVideos URL with all the CRUD functionality
 Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
