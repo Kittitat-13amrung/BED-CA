@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ChannelResource;
 use App\Models\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -10,6 +11,11 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware('auth:sanctum', ['only' => ['channel', 'logout']]);
+    }
+
     public function register(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
@@ -93,8 +99,12 @@ class AuthController extends Controller
     }
 
     public function channel() {
+
+        $channel = new ChannelResource(auth()->user()->loadMissing(['videos', 'videos.comments']));
+
+
         return response()->json([
-            'channel' => [auth()->user()]
+            'channel' => $channel
         ], Response::HTTP_OK);
     }
 

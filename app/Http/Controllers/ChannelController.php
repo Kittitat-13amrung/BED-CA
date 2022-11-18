@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChannelRequest;
 use App\Http\Resources\ChannelCollection;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\YoutubeVideoResource;
@@ -12,6 +13,12 @@ use Illuminate\Support\Str;
 
 class ChannelController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum', ['only' => ['update', 'delete']]);
+    }
+
     /**
      * Display channels retrieved from the database.
      * @OA\Get(
@@ -139,9 +146,16 @@ class ChannelController extends Controller
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Channel $channel)
+    public function update(ChannelRequest $request)
     {
         // To be implemented in CA2
+        $channel = Channel::findOrFail(auth()->user()->id);
+
+        $channel->update($request->all());
+        $channel->save();
+
+        // return response()->json(["message" => "The channel details have been successfully updated", "status" => Response::HTTP_ACCEPTED], Response::HTTP_ACCEPTED);
+        return new ChannelResource($channel->loadMissing(['videos', 'videos.comments']));
     }
 
     /**
@@ -153,5 +167,7 @@ class ChannelController extends Controller
     public function destroy(Channel $channel)
     {
         // To be implemented in CA2
+        $channel = Channel::findOrFail(auth()->user()->id);
+        $channel->delete();
     }
 }

@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 
@@ -95,7 +96,6 @@ class YoutubeVideoController extends Controller
      */
     public function store(YoutubeVideoRequest $request)
     {
-
         // Validating the request from POST method
         // $validation = $request->validate([
         //     'title' => 'required|max:255', 
@@ -230,12 +230,21 @@ class YoutubeVideoController extends Controller
         //     "channel_id" => "integer"
 
         // ]);
+        // $this->authorize('update', $youtubeVideo);
 
-        // update the youtube video data with the new request
-        $youtubeVideo->update($request->all());
+        $response = Gate::inspect('update', $youtubeVideo);
 
-        // then return the newly updated resource to the body
-        return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
+        if($response->allowed()) {
+            // update the youtube video data with the new request
+            $youtubeVideo->update($request->all());
+    
+            // then return the newly updated resource to the body
+            return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
+        } else {
+                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+        }
+        
+
     }
 
     /**
@@ -266,8 +275,14 @@ class YoutubeVideoController extends Controller
      */
     public function destroy(YoutubeVideo $youtubeVideo)
     {
-        // delete the selected video
-        $youtubeVideo->delete();
+        $response = Gate::inspect('delete', $youtubeVideo);
+
+        if($response->allowed()) {
+            // delete the selected video
+            $youtubeVideo->delete();
+        } else {
+                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+        }
 
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
         return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);

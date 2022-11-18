@@ -28,8 +28,11 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/channel', [AuthController::class, 'channel']);
+    // Route::put('channel', [ChannelController::class, 'update']);
+    Route::match(['put', 'patch'], '/channel', [ChannelController::class, 'update']);
 });
 
 // Created youtubeVideos URL with all the CRUD functionality

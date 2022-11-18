@@ -36,7 +36,8 @@ class YoutubeVideoResource extends JsonResource
             'link' => "youtube.com/" . $this->uuid,
             'thumbnail' => $this->thumbnail,
             'channel' => $channel,
-            'comments' => $comments,
+            'hasComments' => $this->comments->count(),
+            'comment' => $comments,
         ];
     }
 
