@@ -17,7 +17,8 @@ class CommentResource extends JsonResource
     public function toArray($request)
     {
         // retrieve channel that commented on the video
-        $channel = new ChannelResource($this->channels[0]);
+        $channel = ChannelResource::collection($this->channels);
+        // dd($this->channel);
 
         return [
             'id' => $this->id,
