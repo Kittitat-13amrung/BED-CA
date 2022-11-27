@@ -44,6 +44,15 @@ use Illuminate\Routing\Controller as BaseController;
      *     description="Welcome page",
      *   ),
      *   
+  * @OA\SecurityScheme(
+  *      securityScheme="bearerAuth",
+  *      in="header",
+  *      name="bearerAuth",
+  *      type="http",
+  *      scheme="bearer",
+  *      bearerFormat="JWT",
+  * ),
+     *   
      *   create components to be reused in different Controllers
      *   @OA\Schema(
  *                 schema="youtube_video",

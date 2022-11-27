@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 class ChannelController extends Controller
 {
 
+    // middleware on only Update and Delete functions
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['only' => ['update', 'delete']]);

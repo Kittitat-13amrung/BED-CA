@@ -108,5 +108,12 @@ class AuthController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function logout(Request $request) {
+
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => "The token has been successfully deleted", "status" => Response::HTTP_ACCEPTED], Response::HTTP_ACCEPTED);
+
+    }
+
 
 }

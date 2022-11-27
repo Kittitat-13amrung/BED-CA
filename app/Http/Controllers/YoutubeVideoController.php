@@ -73,6 +73,7 @@ class YoutubeVideoController extends Controller
      *      tags={"Youtube Videos"},
      *      summary="Create a new youtube video",
      *      description="update and store the updated data to a specific youtube video in the database",
+     *    security={{ "bearerAuth": {} }},
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -180,6 +181,7 @@ class YoutubeVideoController extends Controller
      *      tags={"Youtube Videos"},
      *      summary="Update a youtube video by id",
      *      description="update and store the updated data to a specific youtube video in the database",
+     *    security={{ "bearerAuth": {} }},
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -256,6 +258,7 @@ class YoutubeVideoController extends Controller
      *    tags={"Youtube Videos"},
      *    summary="Delete a youtube video by its ID",
      *    description="Delete a youtube video specified by the ID parameter.",
+     *    security={{ "bearerAuth": {} }},
      *    @OA\Parameter(name="id", in="path", description="Id of a Video", required=true,
      *        @OA\Schema(type="integer")
      *    ),
@@ -285,7 +288,7 @@ class YoutubeVideoController extends Controller
         }
 
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
-        return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);
+        return response()->json(["message" => "The video has been successfully deleted", "status" => "202"], Response::HTTP_ACCEPTED);
     }
 
     /**
