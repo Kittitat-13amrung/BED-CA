@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Channel;
 use App\Models\Comments;
+use App\Models\Image;
 
 class YoutubeVideo extends Model
 {
@@ -38,13 +39,15 @@ class YoutubeVideo extends Model
 
     // videos belongs to channel
     // return channel of the video
-    public function channel() {
+    public function channel()
+    {
         return $this->belongsTo(Channel::class);
     }
 
     // videos has many comments
     // return comments in the video
-    public function comments() {
+    public function comments()
+    {
         return $this->hasMany(Comments::class);
     }
 }

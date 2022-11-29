@@ -50,4 +50,9 @@ class Channel extends Model
         return $this->belongsToMany(Comments::class, 'channel_comment', 'channel_id', 'comment_id');
     }
 
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
 }

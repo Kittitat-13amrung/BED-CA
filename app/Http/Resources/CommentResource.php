@@ -25,7 +25,7 @@ class CommentResource extends JsonResource
             'text' => $this->comment,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
-            'commented_at' => $this->created_at->diffForHumans(),
+            'commented_at' => $this->updated_at->diffForHumans(),
             'belongsToVideo' => $this->youtube_video_id,
             'channel' => $channel,
         ];

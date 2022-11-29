@@ -54,9 +54,9 @@ class VideoPolicy
      */
     public function update(Channel $channel, YoutubeVideo $youtubeVideo)
     {
-        return $channel->id === $youtubeVideo->channel_id 
-        ? Response::allow()
-        : Response::deny();
+        return $channel->id === $youtubeVideo->channel_id
+            ? Response::allow()
+            : Response::deny();
     }
 
     /**
@@ -69,8 +69,8 @@ class VideoPolicy
     public function delete(Channel $channel, YoutubeVideo $youtubeVideo)
     {
         return $channel->id === $youtubeVideo->channel_id
-        ? Response::allow()
-        : Response::deny();
+            ? Response::allow()
+            : Response::deny("eesda", 404);
     }
 
     /**

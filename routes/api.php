@@ -44,10 +44,13 @@ Route::apiResource('/youtubeVideos', YoutubeVideoController::class);
 Route::get('/youtubeVideos/{id}/comments', [YoutubeVideoController::class, 'showComments'])->name('showComments');
 Route::post('/youtubeVideos/{id}/comment', [CommentController::class, 'store']);
 
-Route::prefix('comments')->group(function() {
+Route::prefix('comments')->group(function () {
     Route::get('channel', [CommentController::class, 'showChannelComments']);
-    Route::delete('{id}', [CommentController::class, 'destroy']);
+    // Route::delete('{id}', [CommentController::class, 'destroy']);
+    Route::post('{id}', [CommentController::class, 'store']);
 });
+
+Route::apiResource('/comments', CommentController::class)->except('store');
 
 // Created channel URL with only index and show function attached
 Route::apiResource('/channels', ChannelController::class)->only(['index', 'show']);
