@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\YoutubeVideoRequest;
 use App\Http\Resources\YoutubeVideoResource;
 use App\Http\Resources\CommentResource;
 use App\Models\YoutubeVideo;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 
@@ -41,6 +45,11 @@ use Illuminate\Support\Str;
 
 class YoutubeVideoController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware('auth:sanctum', ['except' => ['index', 'show', 'showComments']]);
+    }
+
     /**
      * Returns all the videos in the database.
      *
@@ -64,6 +73,7 @@ class YoutubeVideoController extends Controller
      *      tags={"Youtube Videos"},
      *      summary="Create a new youtube video",
      *      description="update and store the updated data to a specific youtube video in the database",
+     *    security={{ "bearerAuth": {} }},
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -85,25 +95,34 @@ class YoutubeVideoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(YoutubeVideoRequest $request)
     {
-
         // Validating the request from POST method
-        $validation = $request->validate([
-            'title' => 'required|max:255', 
-            'description' => '',
-            'duration' => 'integer', 
-            'likes' => 'integer', 
-            'dislikes' => 'integer', 
-            'views' => 'integer',
+        // $validation = $request->validate([
+        //     'title' => 'required|max:255', 
+        //     'description' => 'max:2000',
+        //     'duration' => 'integer', 
+        //     'likes' => 'integer', 
+        //     'dislikes' => 'integer', 
+        //     'views' => 'integer',
+        //     'channel_id' => 'integer'
 
-        ]);
+        // ]);
+
+        // dd($request->user()->id);
+        $channel = $request->user()->id;
+
+        // dd([$request->all(), 'channel_id' => $channel]);
 
         // create a new data with the validated data
-        $video = YoutubeVideo::create($validation);
-        // assigning fake uuid and thumbnail
+        // $video = YoutubeVideo::create([$request, 'channel_id' => $channel]);
+        $video = new YoutubeVideo($request->all());
+        $video->channel_id = $channel;
+        // Create uuid for new video
         $video->uuid = "watch?v=".Str::random(10);
+        // assigning fake thumbnail
         $video->thumbnail = "https://picsum.photos/360/360";
+        $video->save();
         // declare a variable to store the array of data
         $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
 
@@ -162,6 +181,7 @@ class YoutubeVideoController extends Controller
      *      tags={"Youtube Videos"},
      *      summary="Update a youtube video by id",
      *      description="update and store the updated data to a specific youtube video in the database",
+     *    security={{ "bearerAuth": {} }},
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -198,25 +218,35 @@ class YoutubeVideoController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, YoutubeVideo $youtubeVideo)
+    public function update(YoutubeVideoRequest $request, YoutubeVideo $youtubeVideo)
     {
         // Validating the request from PUT method
-        $validation = $request->validate([
-            'title' => 'required|max:255', 
-            'description' ,
-            'duration' => 'integer', 
-            'likes' => 'integer', 
-            'dislikes' => 'integer', 
-            'views' => 'integer',
-            'thumbnail' =>"url"
+        // $validation = $request->validate([
+        //     'title' => 'required|max:255', 
+        //     'description' => 'max:2000',
+        //     'duration' => 'integer', 
+        //     'likes' => 'integer', 
+        //     'dislikes' => 'integer', 
+        //     'views' => 'integer',
+        //     'thumbnail' =>"url",
+        //     "channel_id" => "integer"
 
-        ]);
+        // ]);
+        // $this->authorize('update', $youtubeVideo);
 
-        // update the youtube video data with the new request
-        $youtubeVideo->update($validation);
+        $response = Gate::inspect('update', $youtubeVideo);
 
-        // then return the newly updated resource to the body
-        return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
+        if($response->allowed()) {
+            // update the youtube video data with the new request
+            $youtubeVideo->update($request->all());
+    
+            // then return the newly updated resource to the body
+            return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
+        } else {
+                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+        }
+        
+
     }
 
     /**
@@ -228,6 +258,7 @@ class YoutubeVideoController extends Controller
      *    tags={"Youtube Videos"},
      *    summary="Delete a youtube video by its ID",
      *    description="Delete a youtube video specified by the ID parameter.",
+     *    security={{ "bearerAuth": {} }},
      *    @OA\Parameter(name="id", in="path", description="Id of a Video", required=true,
      *        @OA\Schema(type="integer")
      *    ),
@@ -247,10 +278,17 @@ class YoutubeVideoController extends Controller
      */
     public function destroy(YoutubeVideo $youtubeVideo)
     {
-        // delete the selected video
-        $youtubeVideo->delete();
+        $response = Gate::inspect('delete', $youtubeVideo);
+
+        if($response->allowed()) {
+            // delete the selected video
+            $youtubeVideo->delete();
+        } else {
+                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+        }
+
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
-        return response()->json(["message" => "The video has been successfully delete", "status" => "202"], Response::HTTP_ACCEPTED);
+        return response()->json(["message" => "The video has been successfully deleted", "status" => "202"], Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -288,7 +326,13 @@ class YoutubeVideoController extends Controller
      */
     public function showComments($id) {
         // retreive all the comments using the id implemented from the URL
-        $comments = YoutubeVideo::findOrFail($id)->comments;
+        try {
+            $comments = YoutubeVideo::findOrFail($id)->comments;
+        } catch(ModelNotFoundException $ex) {
+            return response()->json(["message" => "The video with id " . $id . " cannot be found in our database.", "status" => "404"], Response::HTTP_NOT_FOUND);
+        };
+
+        // return response()->json(["message" => `The video with id`, "status" => "404"], Response::HTTP_NOT_FOUND);
 
         // returns the findings as an array of objects to the user.
         return CommentResource::collection($comments);

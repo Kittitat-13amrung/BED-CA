@@ -5,16 +5,20 @@ namespace App\Models;
 use App\Models\YoutubeVideo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Channel extends Model
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     // allow mass assignment of the attributes specified below
     protected $fillable = [
         'name',
+        'email',
         'subscribers',
-        'created_at'
+        'created_at',
+        'password'
     ];
 
         /**
@@ -25,6 +29,10 @@ class Channel extends Model
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
     // set default values for following attributes
@@ -40,6 +48,11 @@ class Channel extends Model
     // connects a Many to Many relationship (channels have comments)
     public function comments() {
         return $this->belongsToMany(Comments::class, 'channel_comment', 'channel_id', 'comment_id');
+    }
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
     }
 
 }

@@ -13,16 +13,21 @@ class Comments extends Model
 
     // allow attributes to be mass assigned
     protected $fillable = [
-        'text',
+        'comment',
         'likes',
         'dislikes',
         'commented_at'
     ];
 
+    protected $attributes = [
+        'likes' => 0,
+        'dislikes' => 0,
+    ];
+
     // comments made by channels
     // return comments that belong the the channel
     public function channels() {
-        return $this->belongsToMany(Channel::class, 'channel_comment', 'comment_id', 'channel_id');
+        return $this->belongsToMany(Channel::class, 'channel_comment', 'comment_id', 'channel_id')->withTimestamps();
     }
 
     // comments belong in many videos

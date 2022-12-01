@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('channel_comment', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')->constrained();
-            $table->foreignId('comment_id')->constrained();
+            $table->foreignId('channel_id')->references('id')->on('channels')->onUpdate('cascade')->onDelete('cascade'); ;
+            $table->foreignId('comment_id')->references('id')->on('comments')->onUpdate('cascade')->onDelete('cascade'); ;
             $table->timestamps();
         });
     }

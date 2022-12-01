@@ -15,6 +15,6 @@ class YoutubeVideoSeeder extends Seeder
      */
     public function run()
     {
-        YoutubeVideo::factory()->times(3)->create();
+        YoutubeVideo::factory()->times(20)->hasChannel(1)->hasComments(1)->create();
     }
 }

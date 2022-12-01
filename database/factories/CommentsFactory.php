@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\YoutubeVideo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,8 @@ class CommentsFactory extends Factory
             'comment' => fake()->paragraph(),
             'likes' => fake()->numberBetween($min = 0, $max = 1000000),
             'dislikes' => fake()->numberBetween($min = 0, $max = 1000000),
-            'created_at' => fake()->dateTimeThisDecade()
+            'created_at' => fake()->dateTimeThisDecade(),
+            'youtube_video_id' => YoutubeVideo::factory()
         ];
     }
 }

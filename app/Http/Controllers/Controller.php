@@ -26,26 +26,43 @@ use Illuminate\Routing\Controller as BaseController;
  * ),
  * 
  *     @OA\Tag(
- *         name="Youtube Videos",
- *         description="Retrieving everything about youtube video(s)"
- *     ),
- *     
+ *         name="Authentication",
+ *         description="to access data from API"
+ *     ), 
  *     @OA\Tag(
  *         name="Channels",
  *         description="Retrieving everything about a specific channel or channels"
- *     ), 
+ *     ),
+ *     @OA\Tag(
+ *         name="Youtube Videos",
+ *         description="Retrieving everything about youtube video(s)"
+ *     ),
+ *     @OA\Tag(
+ *         name="Comments",
+ *         description="Retrieving everything about comment(s)"
+ *     ),
+ *     
  * 
  * 
  * @OA/Get(
-     *   path="/"
-     *   description="Home page",
-     *   @OA\Response(
-     *     response="default",
-     *     description="Welcome page",
-     *   ),
-     *   
-     *   create components to be reused in different Controllers
-     *   @OA\Schema(
+ *   path="/"
+ *   description="Home page",
+ *   @OA\Response(
+ *     response="default",
+ *     description="Welcome page",
+ *   ),
+ *   
+ * @OA\SecurityScheme(
+ *      securityScheme="bearerAuth",
+ *      in="header",
+ *      name="bearerAuth",
+ *      type="http",
+ *      scheme="bearer",
+ *      bearerFormat="JWT",
+ * ),
+ *   
+ *   create components to be reused in different Controllers
+ *   @OA\Schema(
  *                 schema="youtube_video",
  *                 @OA\Property(
  *                     property="id",
@@ -62,37 +79,37 @@ use Illuminate\Routing\Controller as BaseController;
  *                     type="text",
  *                     example="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed erat mi. Vivamus mollis orci vitae neque fringilla, non interdum urna commodo. Cras at blandit lorem, malesuada posuere felis."                    
  *                 ),
-  *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="created_at",
  *                     type="date",
  *                     example="2022-10-29"
  *                 ),
-  *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="duration",
  *                     type="integer",
  *                     example="30"
  *                 ),
-   *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="likes",
  *                     type="integer",
  *                     example="30"
  *                 ),
-   *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="dislikes",
  *                     type="integer",
  *                     example="30"
  *                 ),
-   *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="views",
  *                     type="integer",
  *                     example="30"
  *                 ),
-   *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="link",
  *                     type="text",
  *                     example="youtube.com\/watch?v=1fa3d3b7-d0c7-3e5e-89e7-3713d0e74f87"
  *                 ),
-   *                 @OA\Property(
+ *                 @OA\Property(
  *                     property="thumbnail",
  *                     type="text",
  *                     example="https:\/\/via.placeholder.com\/640x480.png\/005500?text=thumbnail+voluptatem"
@@ -146,10 +163,10 @@ use Illuminate\Routing\Controller as BaseController;
  *                       ref="#/components/schemas/youtube_video")
  *                   ), 
  *                   
-     *   @OA\Schema(
+ *   @OA\Schema(
  *                 schema="successful_delete",
  *                 @OA\Property(
- *                     property="msessage",
+ *                     property="message",
  *                     type="string",
  *                     example="The data has been successfully deleted"
  *                 ),
@@ -157,6 +174,24 @@ use Illuminate\Routing\Controller as BaseController;
  *                     property="status",
  *                     type="integer",
  *                     example="202"
+ *                 ),
+ *      ),
+ *   @OA\Schema(
+ *                 schema="auth",
+ *                 @OA\Property(
+ *                     property="status",
+ *                     type="string",
+ *                     example="201"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="message",
+ *                     type="string",
+ *                     example="Channel has been successfully registered"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="token",
+ *                     type="string",
+ *                     example="1|C7eINx2yy8TUM3PkWZXwt8OtN62ndluhpcYKjxIE"
  *                 ),
  *      ),
  *      
@@ -199,10 +234,10 @@ use Illuminate\Routing\Controller as BaseController;
  *                       ref="#/components/schemas/Channel")
  *                     ),
  *                   )
-     *     
+ *     
  */
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+  use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

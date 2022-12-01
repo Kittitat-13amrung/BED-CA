@@ -6,7 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\CommentResource;
 use Illuminate\Support\Carbon;
-use Mockery\Undefined;
 
 class YoutubeVideoResource extends JsonResource
 {
@@ -36,7 +35,8 @@ class YoutubeVideoResource extends JsonResource
             'link' => "youtube.com/" . $this->uuid,
             'thumbnail' => $this->thumbnail,
             'channel' => $channel,
-            'comments' => $comments,
+            'hasComments' => $this->comments->count(),
+            'comment' => $comments,
         ];
     }
 
