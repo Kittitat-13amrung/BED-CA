@@ -221,6 +221,7 @@ class AuthController extends Controller
      *      ),
      * ),
      */
+
     public function channel()
     {
 
