@@ -23,23 +23,23 @@ class ChannelController extends Controller
     /**
      * Display channels retrieved from the database.
      * @OA\Get(
-        *     path="/api/channels",
-        *     description="Displays all the youtube videos",
-        *     tags={"Channels"},
-        *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation, Returns a list of Books in JSON format",
-        *          @OA\JsonContent(ref="#/components/schemas/Channel")  
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
- * )
+     *     path="/api/channels",
+     *     description="Displays all the youtube videos",
+     *     tags={"Channels"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation, Returns a list of Books in JSON format",
+     *          @OA\JsonContent(ref="#/components/schemas/Channel")  
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -55,31 +55,31 @@ class ChannelController extends Controller
      * Display all the videos made by the channel by retreiving its ID.
      *
      * @OA\Get(
-    *     path="/api/channels/{id}/videos",
-    *     description="Gets videos by its channel ID",
-    *     tags={"Channels"},
-    *          @OA\Parameter(
-        *          name="id",
-        *          description="Video id",
-        *          required=true,
-        *          in="path",
-        *          @OA\Schema(
-        *              type="integer")
+     *     path="/api/channels/{id}/videos",
+     *     description="Gets videos by its channel ID",
+     *     tags={"Channels"},
+     *          @OA\Parameter(
+     *          name="id",
+     *          description="Video id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer")
      *          ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation",
-        *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
- * )
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      * @param  $id
      * @return \Illuminate\Http\Response
      */
@@ -99,38 +99,38 @@ class ChannelController extends Controller
      */
     public function store(Request $request)
     {
-        // To be implemented in CA2
+        // Implemented in AuthController
     }
 
     /**
      * Display the specified channel resource using its ID.
      *
-        * @OA\Get(
-        *     path="/api/channels/{id}",
-        *     description="Gets a channel by its ID",
-        *     tags={"Channels"},
-        *          @OA\Parameter(
-        *          name="id",
-        *          description="Channel id",
-        *          required=true,
-        *          in="path",
-        *          @OA\Schema(
-        *              type="integer")
-        *          ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation",
-        *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
- * )
+     * @OA\Get(
+     *     path="/api/channels/{id}",
+     *     description="Gets a channel by its ID",
+     *     tags={"Channels"},
+     *          @OA\Parameter(
+     *          name="id",
+     *          description="Channel id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer")
+     *          ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
@@ -143,6 +143,92 @@ class ChannelController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @OA\Put(
+     *     path="/api/auth/channel",
+     *     description="Update Channel details",
+     *     summary="Update all details in your channel",
+     *     tags={"Authentication"},
+     *    security={{ "bearerAuth": {} }},
+     *          @OA\RequestBody(
+     *            @OA\MediaType(
+     *              mediaType="application/x-www-form-urlencoded",
+     *              @OA\Schema(
+     *                type="object",
+     *                @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="Update your channel name"
+     *                ),
+     *                @OA\Property(
+     *                  property="email",
+     *                  type="email",
+     *                  description="Update your channel email"
+     *                ),
+     *                @OA\Property(
+     *                  property="password",
+     *                  type="password",
+     *                  description="Update your channel password",
+     *                )
+     *              )
+     *            )
+     *            ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Channel")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * ),
+     *     * @OA\Patch(
+     *     path="/api/auth/channel",
+     *     description="Update Channel details",
+     *     summary="Update a specific detail in your channel",
+     *     tags={"Authentication"},
+     *    security={{ "bearerAuth": {} }},
+     *          @OA\RequestBody(
+     *            @OA\MediaType(
+     *              mediaType="application/x-www-form-urlencoded",
+     *              @OA\Schema(
+     *                type="object",
+     *                @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="Update your channel name"
+     *                ),
+     *                @OA\Property(
+     *                  property="email",
+     *                  type="email",
+     *                  description="Update your channel email"
+     *                ),
+     *                @OA\Property(
+     *                  property="password",
+     *                  type="password",
+     *                  description="Update your channel password",
+     *                )
+     *              )
+     *            )
+     *            ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Channel")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * )
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response

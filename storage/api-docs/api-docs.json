@@ -13,6 +13,292 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register account",
+                "description": "Register an account to retrieve data from API",
+                "operationId": "d764dd091cc4494ae0baf360b03319f3",
+                "requestBody": {
+                    "description": "Login data",
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Enter your channel name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Enter your channel email",
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "description": "Enter your channel password",
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered an account.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/auth"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated: Email is already used by another user."
+                    },
+                    "406": {
+                        "description": "Unacceptable: Missing some or all parameters."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login to your account",
+                "description": "Login to your account to retrieve data from API",
+                "operationId": "8dcb70df1020986038d098cc08d05dae",
+                "requestBody": {
+                    "description": "Login data",
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "Enter your channel email",
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "description": "Enter your channel password",
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/auth"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/channel": {
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update all details in your channel",
+                "description": "Update Channel details",
+                "operationId": "44410b6f2543a98ffd159c723e86b5bd",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Update your channel name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Update your channel email",
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "description": "Update your channel password",
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get details about your channel",
+                "description": "Get everything related to your account such as name, subscriber, videos, comments etc.",
+                "operationId": "356bad558d3b59416e220050d529782b",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Channel"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/Comment"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update a specific detail in your channel",
+                "description": "Update Channel details",
+                "operationId": "8ca3e06b311fdf839c2a949473dc3b87",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Update your channel name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Update your channel email",
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "description": "Update your channel password",
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout of your account",
+                "description": "Logout of your account.",
+                "operationId": "69281b12abb272c76871f19cb17ca563",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/auth"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/api/channels": {
             "get": {
                 "tags": [
@@ -117,6 +403,104 @@
                         "description": "Forbidden"
                     }
                 }
+            }
+        },
+        "/api/comments/{id}": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Get a comment in a youtube video",
+                "description": "retrieve a comment, given it existed, from a youtube video.",
+                "operationId": "ca005bcffa22ab29b155dd7aa13b5d6e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "video id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Create a new comment in a video",
+                "description": "store the data as a comment in a youtube video.",
+                "operationId": "d448ba6444f0ff2770b763b441e91f6e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "video id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "comment"
+                                ],
+                                "properties": {
+                                    "comment": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Hi, this is a test"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment Not Found"
+                    },
+                    "401": {
+                        "description": "Unauthorised Access"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/youtubeVideos": {
@@ -508,13 +892,30 @@
             },
             "successful_delete": {
                 "properties": {
-                    "msessage": {
+                    "message": {
                         "type": "string",
                         "example": "The data has been successfully deleted"
                     },
                     "status": {
                         "type": "integer",
                         "example": "202"
+                    }
+                },
+                "type": "object"
+            },
+            "auth": {
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "201"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Channel has been successfully registered"
+                    },
+                    "token": {
+                        "type": "string",
+                        "example": "1|C7eINx2yy8TUM3PkWZXwt8OtN62ndluhpcYKjxIE"
                     }
                 },
                 "type": "object"
@@ -575,17 +976,26 @@
                 "in": "header",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
-            }
+            },
+            "0": []
         }
     },
     "tags": [
+        {
+            "name": "Authentication",
+            "description": "to access data from API"
+        },
+        {
+            "name": "Channels",
+            "description": "Retrieving everything about a specific channel or channels"
+        },
         {
             "name": "Youtube Videos",
             "description": "Retrieving everything about youtube video(s)"
         },
         {
-            "name": "Channels",
-            "description": "Retrieving everything about a specific channel or channels"
+            "name": "Comments",
+            "description": "Retrieving everything about comment(s)"
         }
     ]
 }
