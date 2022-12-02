@@ -27,13 +27,19 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
 
+        $this->configureRateLimiting();
+
         resolve(\Illuminate\Routing\UrlGenerator::class)->forceScheme('https');
 
         parent::boot();
 
-        $this->configureRateLimiting();
 
         $this->routes(function () {
+            Route::prefix('apis')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/api.php'));
+
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
