@@ -14,39 +14,40 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 
-    /**
-     *
-     * 
-     * 
-     * 
+/**
+ *
+ * 
+ * 
+ * 
  * @OA\Get(
  *     path="/api/youtubeVideos",
  *     description="Displays all the youtube videos with its relationship.",
  *      summary="Display all videos",
  *     tags={"Youtube Videos"},
-     *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation, Returns a list of Videos in JSON format",
-        *          @OA\JsonContent(ref="#/components/schemas/youtube_video"),
-        *          ),
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation, Returns a list of Videos in JSON format",
+ *          @OA\JsonContent(ref="#/components/schemas/youtube_video"),
+ *          ),
+ *       ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden"
+ *      )
  * )
-     *
-     * @return \Illuminate\Http\Response
-     */
+ *
+ * @return \Illuminate\Http\Response
+ */
 
 class YoutubeVideoController extends Controller
 {
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:sanctum', ['except' => ['index', 'show', 'showComments']]);
     }
 
@@ -55,8 +56,44 @@ class YoutubeVideoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Query Eloquent Building
+        if ($request->query()) {
+            $videos = YoutubeVideo::query();
+
+            switch ($request->get('orderBy')) {
+                case 'desc':
+                    $videos->orderBy('id', 'desc');
+                    break;
+                case 'title':
+                    $videos->orderBy('title');
+                    break;
+                case 'created_at':
+                    $videos->orderBy('created_at');
+                    break;
+                case 'views':
+                    $videos->orderBy('views');
+                    break;
+                case 'likes':
+                    $videos->orderBy('likes');
+                    break;
+                case 'dislikes':
+                    $videos->orderBy('views');
+                    break;
+            }
+
+            if ($request->get('random')) {
+                $videos->inRandomOrder()->get();
+            }
+
+            if ($request->get('likes')) {
+                $videos->where('likes', '<=', $request->get('likes'));
+            }
+
+            return YoutubeVideoResource::collection($videos->paginate(10))->response();
+        };
+
         // Eager loading video data with relationships
         $videos = YoutubeVideo::with(['comments', 'channel']);
 
@@ -88,7 +125,7 @@ class YoutubeVideoController extends Controller
      *      ),
      *     @OA\Response(
      *          response=200, description="Success",
- *              @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *              @OA\JsonContent(ref="#/components/schemas/youtube_video")
      *          )
      *     )
      * )
@@ -119,12 +156,12 @@ class YoutubeVideoController extends Controller
         $video = new YoutubeVideo($request->all());
         $video->channel_id = $channel;
         // Create uuid for new video
-        $video->uuid = "watch?v=".Str::random(10);
+        $video->uuid = "watch?v=" . Str::random(10);
         // assigning fake thumbnail
         $video->thumbnail = "https://picsum.photos/360/360";
         $video->save();
         // declare a variable to store the array of data
-        $uploadedVideo = new YoutubeVideoResource($video->load(['comments','channel']));
+        $uploadedVideo = new YoutubeVideoResource($video->load(['comments', 'channel']));
 
         return response()->json($uploadedVideo, Response::HTTP_CREATED); // returns the array in JSON format to the user
     }
@@ -133,39 +170,39 @@ class YoutubeVideoController extends Controller
      * Display a youtube video by its ID.
      *
      * @OA\Get(
-    *     path="/api/youtubeVideos/{id}",
-    *     description="Retreive a youtube video specified by the ID parameter and displays it in a JSON format.",
-    *     summary="Gets a youtube video by its ID",
-    *     tags={"Youtube Videos"},
-    *          @OA\Parameter(
-        *          name="id",
-        *          description="video id",
-        *          required=true,
-        *          in="path",
-        *          @OA\Schema(
-        *              type="integer")
+     *     path="/api/youtubeVideos/{id}",
+     *     description="Retreive a youtube video specified by the ID parameter and displays it in a JSON format.",
+     *     summary="Gets a youtube video by its ID",
+     *     tags={"Youtube Videos"},
+     *          @OA\Parameter(
+     *          name="id",
+     *          description="video id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer")
      *          ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation",
-        *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
- * )
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      * @param  \App\Models\YoutubeVideo  $youtubeVideo
      * @return \Illuminate\Http\Response
      */
     public function show(YoutubeVideo $youtubeVideo)
     {
         // eager loads the video with selected ID and its relationships
-        return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
+        return new YoutubeVideoResource($youtubeVideo->load(['comments', 'channel']));
     }
 
     /**
@@ -201,19 +238,19 @@ class YoutubeVideoController extends Controller
      *     @OA\Response(
      *          response=400, description="Invalid video ID",
      *          ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
      *          ),
-        *      @OA\Response(
-        *          response=404,
-        *          description="Video not found",
-        *      )
+     *      @OA\Response(
+     *          response=404,
+     *          description="Video not found",
+     *      )
      *          
      *     )
      * )
@@ -236,17 +273,15 @@ class YoutubeVideoController extends Controller
 
         $response = Gate::inspect('update', $youtubeVideo);
 
-        if($response->allowed()) {
+        if ($response->allowed()) {
             // update the youtube video data with the new request
             $youtubeVideo->update($request->all());
-    
-            // then return the newly updated resource to the body
-            return new YoutubeVideoResource($youtubeVideo->load(['comments','channel']));
-        } else {
-                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
-        }
-        
 
+            // then return the newly updated resource to the body
+            return new YoutubeVideoResource($youtubeVideo->load(['comments', 'channel']));
+        } else {
+            return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+        }
     }
 
     /**
@@ -280,11 +315,11 @@ class YoutubeVideoController extends Controller
     {
         $response = Gate::inspect('delete', $youtubeVideo);
 
-        if($response->allowed()) {
+        if ($response->allowed()) {
             // delete the selected video
             $youtubeVideo->delete();
         } else {
-                return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
+            return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
         }
 
         // then response back with HTTP response of code 200 to display message to indicate a succesful action
@@ -295,40 +330,41 @@ class YoutubeVideoController extends Controller
      * Display all the comments from a video using its ID.
      *
      * @OA\Get(
-    *     path="/api/youtubeVideos/{id}/comments",
-    *     description="Retreive comments from a youtube video specified by the ID parameter and displays it in a JSON format.",
-    *     summary="Gets comments by its youtube video ID",
-    *     tags={"Youtube Videos"},
-    *          @OA\Parameter(
-        *          name="id",
-        *          description="Video ID",
-        *          required=true,
-        *          in="path",
-        *          @OA\Schema(
-        *              type="integer")
+     *     path="/api/youtubeVideos/{id}/comments",
+     *     description="Retreive comments from a youtube video specified by the ID parameter and displays it in a JSON format.",
+     *     summary="Gets comments by its youtube video ID",
+     *     tags={"Youtube Videos"},
+     *          @OA\Parameter(
+     *          name="id",
+     *          description="Video ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer")
      *          ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Successful operation",
-        *          @OA\JsonContent(ref="#/components/schemas/Comment")
-        *       ),
-        *      @OA\Response(
-        *          response=401,
-        *          description="Unauthenticated",
-        *      ),
-        *      @OA\Response(
-        *          response=403,
-        *          description="Forbidden"
-        *      )
- * )
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Comment")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function showComments($id) {
+    public function showComments($id)
+    {
         // retreive all the comments using the id implemented from the URL
         try {
             $comments = YoutubeVideo::findOrFail($id)->comments;
-        } catch(ModelNotFoundException $ex) {
+        } catch (ModelNotFoundException $ex) {
             return response()->json(["message" => "The video with id " . $id . " cannot be found in our database.", "status" => "404"], Response::HTTP_NOT_FOUND);
         };
 
