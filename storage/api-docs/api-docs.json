@@ -510,6 +510,48 @@
                 ],
                 "summary": "Display all videos",
                 "description": "Displays all the youtube videos with its relationship.",
+                "parameters": [
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "description": "orderBy allows data to be re-arrange in the order of title, created_at, views, likes, and dislikes.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "random",
+                        "in": "query",
+                        "description": "retrieve data and pluck it in random order.",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "likes",
+                        "in": "query",
+                        "description": "retrieve data by filtering the videos that have the amount of likes less than the specified number.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dislikes",
+                        "in": "query",
+                        "description": "retrieve data by filtering the videos that have the amount of dislikes less than the specified number.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "retrieve data by filtering the videos that are made in the specified year.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation, Returns a list of Videos in JSON format",

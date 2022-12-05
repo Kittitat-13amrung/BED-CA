@@ -7,6 +7,7 @@ use App\Http\Resources\ChannelCollection;
 use App\Http\Resources\ChannelResource;
 use App\Http\Resources\YoutubeVideoResource;
 use App\Models\Channel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -42,13 +43,69 @@ class ChannelController extends Controller
      * )
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
+
+        // Query Eloquent Building
+        $channels = Channel::query();
+
+        if ($request->query()) {
+
+            switch ($request->get('orderBy')) {
+                case 'desc':
+                    $channels->orderBy('id', 'desc');
+                    break;
+                case 'subscribers':
+                    $channels->orderBy('subscribers');
+                    break;
+                case 'title':
+                    $channels->orderBy('name');
+                    break;
+                case 'created_at':
+                    $channels->orderBy('created_at');
+                    break;
+                case 'likes':
+                    $channels->orderBy('likes');
+                    break;
+                case 'dislikes':
+                    $channels->orderBy('dislikes');
+                    break;
+            }
+
+            if ($request->get('random')) {
+                $channels->inRandomOrder()->get();
+            }
+
+            if ($request->get('likes')) {
+                $channels->where('likes', '<=', $request->get('likes'));
+            }
+
+            if ($request->get('dislikes')) {
+                $channels->where('dislikes', '<=', $request->get('likes'));
+            }
+
+            if ($request->get('created_at')) {
+                $channels->where('created_at', '<=', $request->get('created_at'));
+            }
+
+            if ($request->get('updated_at')) {
+                $channels->where('updated_at', '<=', $request->get('created_at'));
+            }
+
+            if ($request->get('hasVideo') === "yes") {
+                $channels->has('videos')->get();
+            } else {
+                $channels->doesntHave('videos')->get();
+            }
+        }
+
         // Eager loading channel data with its relationships
-        $channels = Channel::with(['videos', 'comments']);
+        $channels->with(['videos', 'comments']);
 
         // responds in JSON format the collection of data
-        return new ChannelCollection($channels->paginate(50));
+        return ChannelResource::collection($channels->paginate(10))->response();
+        // return new ChannelCollection($channels->paginate(50));
     }
 
     /**

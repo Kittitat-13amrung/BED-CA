@@ -24,6 +24,41 @@ use Illuminate\Support\Str;
  *     description="Displays all the youtube videos with its relationship.",
  *      summary="Display all videos",
  *     tags={"Youtube Videos"},
+ *          @OA\Parameter(
+ *          name="orderBy",
+ *          description="orderBy allows data to be re-arrange in the order of title, created_at, views, likes, and dislikes.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string")
+ *          ),
+ *          @OA\Parameter(
+ *          name="random",
+ *          description="retrieve data and pluck it in random order.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="boolean")
+ *          ),
+ *          @OA\Parameter(
+ *          name="likes",
+ *          description="retrieve data by filtering the videos that have the amount of likes less than the specified number.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer")
+ *          ),
+ * *          @OA\Parameter(
+ *          name="dislikes",
+ *          description="retrieve data by filtering the videos that have the amount of dislikes less than the specified number.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer")
+ *          ),
+ * *          @OA\Parameter(
+ *          name="year",
+ *          description="retrieve data by filtering the videos that are made in the specified year.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer")
+ *          ),
  *      @OA\Response(
  *          response=200,
  *          description="Successful operation, Returns a list of Videos in JSON format",
@@ -79,7 +114,7 @@ class YoutubeVideoController extends Controller
                     $videos->orderBy('likes');
                     break;
                 case 'dislikes':
-                    $videos->orderBy('views');
+                    $videos->orderBy('dislikes');
                     break;
             }
 
@@ -90,6 +125,22 @@ class YoutubeVideoController extends Controller
             if ($request->get('likes')) {
                 $videos->where('likes', '<=', $request->get('likes'));
             }
+
+            if ($request->get('dislikes')) {
+                $videos->where('dislikes', '<=', $request->get('dislikes'));
+            }
+
+            if ($request->get('year')) {
+                $videos->whereYear('created_at', $request->get('year'));
+            }
+
+            if ($request->get('hasComments') === "yes") {
+                $videos->has('comments')->get();
+            } else {
+                $videos->doesntHave('comments')->get();
+            }
+
+            $videos->with(['comments', 'channel']);
 
             return YoutubeVideoResource::collection($videos->paginate(10))->response();
         };
