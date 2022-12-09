@@ -44,8 +44,7 @@ class ChannelSeeder extends Seeder
         //     });
         // });
 
-        // $video = YoutubeVideo::factory()->count(3)->create();
-
-        Channel::factory()->times(3)->hasComments(3, ['created_at' => today(), 'updated_at' => today()])->create();
+        // Create channels and populate videos with comments
+        Channel::factory(30)->hasVideos(10)->hasComments(10)->create();
     }
 }

@@ -59,6 +59,15 @@ use Illuminate\Support\Str;
  *          @OA\Schema(
  *              type="integer")
  *          ),
+ *          @OA\Parameter(
+ *          name="hasVideos",
+ *          description="retrieve data by filtering the channels that have videos.",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="enum",
+ *              enum={"yes","no"}
+ *              ),
+ *              ),
  *      @OA\Response(
  *          response=200,
  *          description="Successful operation, Returns a list of Videos in JSON format",
@@ -93,10 +102,13 @@ class YoutubeVideoController extends Controller
      */
     public function index(Request $request)
     {
+
+        // Eager loading video data with relationships
+        $videos = YoutubeVideo::query();
+
         // Query Eloquent Building
         if ($request->query()) {
-            $videos = YoutubeVideo::query();
-
+            // switch cases depending on the value of orderBy
             switch ($request->get('orderBy')) {
                 case 'desc':
                     $videos->orderBy('id', 'desc');
@@ -114,42 +126,85 @@ class YoutubeVideoController extends Controller
                     $videos->orderBy('likes');
                     break;
                 case 'dislikes':
-                    $videos->orderBy('dislikes');
+                    $videos->orderBy('views');
                     break;
             }
 
+            // put data in random order
             if ($request->get('random')) {
                 $videos->inRandomOrder()->get();
             }
 
+            // filter data by amount of likes
             if ($request->get('likes')) {
                 $videos->where('likes', '<=', $request->get('likes'));
             }
 
+            // filter data by amount of dislikes
             if ($request->get('dislikes')) {
                 $videos->where('dislikes', '<=', $request->get('dislikes'));
             }
 
+            // filter data by year
             if ($request->get('year')) {
                 $videos->whereYear('created_at', $request->get('year'));
             }
 
+            // filter data by has comments
             if ($request->get('hasComments') === "yes") {
                 $videos->has('comments')->get();
-            } else {
+            } else if ($request->get('hasComments') === "no") {
                 $videos->doesntHave('comments')->get();
             }
 
-            $videos->with(['comments', 'channel']);
+            // include and exclude functionality didn't work
+            // if ($request->get('include')) {
+            //     $arr = explode(",", $request->get('include'));
 
-            return YoutubeVideoResource::collection($videos->paginate(10))->response();
+            //     function filter($array)
+            //     {
+            //         return $array !== "comments";
+            //     }
+            //     // dd(...$arr);
+            //     if (str_contains($request->get('include'), "channel")) {
+
+            //         $arr = array_filter($arr, function ($arr) {
+            //             return !str_contains($arr, 'channel');
+            //         });
+
+            //         $arr[array_search('channel', $arr)] = 'channel_id';
+
+            //         // dd($arr);
+            //         $videos->with(['channel'])->get();
+            //     }
+
+            //     if (str_contains($request->get('include'), "comment")) {
+            //         $arr = array_filter($arr, function ($arr) {
+            //             return !str_contains($arr, 'comment');
+            //         });
+            //         $videos->with(['comments'])->get();
+            //     }
+
+            //     return $videos->select('id', ...$arr)->get();
+            // }
+
+            // if ($request->get('exclude')) {
+            //     $arr = explode(",", $request->get('exclude'));
+            //     // dd(...$arr);
+            //     // dd($videos->get()->makeHidden('title'));
+            //     $videos = YoutubeVideoResource::collection($videos->get());
+            //     foreach ($videos as $video) {
+            //         $video->only(['title']);
+            //     }
+            //     return $videos;
+            //     // return $videos->get()->makeHidden($arr);
+            // }
         };
 
-        // Eager loading video data with relationships
-        $videos = YoutubeVideo::with(['comments', 'channel']);
+        $videos->with(['comments', 'channel']);
 
-        // Return data encapsulated in a collection paginated by 10
-        return YoutubeVideoResource::collection($videos->paginate(10))->response();
+        // Return data encapsulated in a collection
+        return YoutubeVideoResource::collection($videos->get())->response();
     }
 
     /**
@@ -185,25 +240,11 @@ class YoutubeVideoController extends Controller
      */
     public function store(YoutubeVideoRequest $request)
     {
-        // Validating the request from POST method
-        // $validation = $request->validate([
-        //     'title' => 'required|max:255', 
-        //     'description' => 'max:2000',
-        //     'duration' => 'integer', 
-        //     'likes' => 'integer', 
-        //     'dislikes' => 'integer', 
-        //     'views' => 'integer',
-        //     'channel_id' => 'integer'
 
-        // ]);
-
-        // dd($request->user()->id);
         $channel = $request->user()->id;
 
-        // dd([$request->all(), 'channel_id' => $channel]);
 
         // create a new data with the validated data
-        // $video = YoutubeVideo::create([$request, 'channel_id' => $channel]);
         $video = new YoutubeVideo($request->all());
         $video->channel_id = $channel;
         // Create uuid for new video
@@ -308,20 +349,8 @@ class YoutubeVideoController extends Controller
      */
     public function update(YoutubeVideoRequest $request, YoutubeVideo $youtubeVideo)
     {
-        // Validating the request from PUT method
-        // $validation = $request->validate([
-        //     'title' => 'required|max:255', 
-        //     'description' => 'max:2000',
-        //     'duration' => 'integer', 
-        //     'likes' => 'integer', 
-        //     'dislikes' => 'integer', 
-        //     'views' => 'integer',
-        //     'thumbnail' =>"url",
-        //     "channel_id" => "integer"
-
-        // ]);
-        // $this->authorize('update', $youtubeVideo);
-
+        // Inspecting using YoutubeVideoPolicy to see
+        // if the user is the one who made the video
         $response = Gate::inspect('update', $youtubeVideo);
 
         if ($response->allowed()) {
@@ -330,9 +359,44 @@ class YoutubeVideoController extends Controller
 
             // then return the newly updated resource to the body
             return new YoutubeVideoResource($youtubeVideo->load(['comments', 'channel']));
-        } else {
+        } else { //throw an error if fails
             return response()->json(["message" => "The video does not exist in your channel", "status" => Response::HTTP_NOT_FOUND]);
         }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @OA\Get(
+     *      path="/api/auth/channel/videos",
+     *      tags={"Authentication"},
+     *      summary="Get video(s) made by your channel",
+     *      description="retrieve video(s), given it existed, from the token bearer.",
+     *    security={{ "bearerAuth": {} }},
+     *     @OA\Response(
+     *          response=200, description="Success",
+     *              @OA\JsonContent(ref="#/components/schemas/youtube_video")
+     *          ),
+     *     @OA\Response(
+     *          response=401, description="Unauthorised",
+     *          ),
+     *     @OA\Response(
+     *          response=404, description="Comment Not Found",
+     *          ),
+     * )
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showChannelVideos()
+    {
+        // Retrieve all videos made by users
+        $videos = auth()->user()->videos;
+
+        // Put $videos and make it into a collection
+        $collection = YoutubeVideoResource::collection($videos);
+
+        return $collection;
     }
 
     /**
@@ -422,6 +486,6 @@ class YoutubeVideoController extends Controller
         // return response()->json(["message" => `The video with id`, "status" => "404"], Response::HTTP_NOT_FOUND);
 
         // returns the findings as an array of objects to the user.
-        return CommentResource::collection($comments);
+        return CommentResource::collection($comments->load('video'));
     }
 }

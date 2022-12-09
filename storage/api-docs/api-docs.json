@@ -100,7 +100,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "Successful logged in",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -124,6 +124,44 @@
             }
         },
         "/api/auth/channel": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get details about your channel",
+                "description": "Get everything related to your account such as name, subscriber, videos, comments etc.",
+                "operationId": "5f0516e37fc40ea57a3d8e0f87462544",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation returns JSON format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Channel"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/Comment"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Authentication"
@@ -178,27 +216,20 @@
                     }
                 ]
             },
-            "post": {
+            "delete": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Get details about your channel",
-                "description": "Get everything related to your account such as name, subscriber, videos, comments etc.",
-                "operationId": "356bad558d3b59416e220050d529782b",
+                "summary": "Delete your channel",
+                "description": "Delete your own channel from the database, including the videos, and comments by the channel",
+                "operationId": "9c327252e6821d149ce77010c2dced64",
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "Channel has been successfully deleted",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/Channel"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/Comment"
-                                        }
-                                    ]
+                                    "$ref": "#/components/schemas/auth"
                                 }
                             }
                         }
@@ -208,6 +239,9 @@
                     },
                     "403": {
                         "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Server Errors"
                     }
                 },
                 "security": [
@@ -281,7 +315,7 @@
                 "operationId": "69281b12abb272c76871f19cb17ca563",
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "Channel has been successfully logged out",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -307,6 +341,52 @@
                 "summary": "Display channels retrieved from the database.",
                 "description": "Displays all the youtube videos",
                 "operationId": "be223b25163500bac9e4ec9d02150af6",
+                "parameters": [
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "description": "orderBy allows data to be re-arrange in the order of descending order of id, name, created_at, and subscribers.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "random",
+                        "in": "query",
+                        "description": "retrieve data and pluck it in random order.",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "subscribers",
+                        "in": "query",
+                        "description": "retrieve data by filtering the channels that has their subscribers below the specified threshold.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "retrieve data by filtering the channels that are made in the specified year.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "hasVideos",
+                        "in": "query",
+                        "description": "retrieve data by filtering the channels that have videos.",
+                        "schema": {
+                            "type": "enum",
+                            "enum": [
+                                "yes",
+                                "no"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation, Returns a list of Books in JSON format",
@@ -317,9 +397,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     },
                     "403": {
                         "description": "Forbidden"
@@ -405,6 +482,76 @@
                 }
             }
         },
+        "/api/comments": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Display all comments",
+                "description": "Displays all the comments with its relationship ie. Channel that made the comment.",
+                "operationId": "0406f270b674fae17bf23b4206a3004f",
+                "parameters": [
+                    {
+                        "name": "orderBy",
+                        "in": "query",
+                        "description": "orderBy allows data to be re-arrange in the order of title, created_at, views, likes, and dislikes.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "random",
+                        "in": "query",
+                        "description": "retrieve data and pluck it in random order.",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "likes",
+                        "in": "query",
+                        "description": "retrieve data by filtering the comments that have the amount of likes less than the specified number.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dislikes",
+                        "in": "query",
+                        "description": "retrieve data by filtering the comments that have the amount of dislikes less than the specified number.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "retrieve data by filtering the comments that are made in the specified year.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation, Returns a list of Comments in JSON format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/api/comments/{id}": {
             "get": {
                 "tags": [
@@ -440,6 +587,70 @@
                     }
                 }
             },
+            "put": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Update a comment by id",
+                "description": "update and store the updated data to a specific comment in the database. The comment must be the one made by your channel. Otherwise, an error will display.",
+                "operationId": "CommentPut",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the comment from your channel. You could look through your comments made by your channel in the Channels tag",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "comment": {
+                                        "description": "Update your comment body",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid video ID"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Comments"
@@ -461,16 +672,12 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
-                                "required": [
-                                    "comment"
-                                ],
                                 "properties": {
                                     "comment": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "Hi, this is a test"
+                                        "description": "Post a new comment",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -494,6 +701,78 @@
                     },
                     "401": {
                         "description": "Unauthorised Access"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Delete a comment by its ID",
+                "description": "Delete a comment specified by the ID parameter.",
+                "operationId": "CommentDestroy",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Comment",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/successful_delete"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/channel/comments": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get comment(s) made by your channel",
+                "description": "retrieve comment(s), given it existed, from the token bearer.",
+                "operationId": "ad365c6550bc8b4c8a4c048e7101697c",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised"
+                    },
+                    "404": {
+                        "description": "Comment Not Found"
                     }
                 },
                 "security": [
@@ -549,6 +828,18 @@
                         "description": "retrieve data by filtering the videos that are made in the specified year.",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "hasVideos",
+                        "in": "query",
+                        "description": "retrieve data by filtering the channels that have videos.",
+                        "schema": {
+                            "type": "enum",
+                            "enum": [
+                                "yes",
+                                "no"
+                            ]
                         }
                     }
                 ],
@@ -794,6 +1085,39 @@
                     },
                     "404": {
                         "description": "Video not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/channel/videos": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get video(s) made by your channel",
+                "description": "retrieve video(s), given it existed, from the token bearer.",
+                "operationId": "37f4cf59747de604efbe76fed2d1b110",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/youtube_video"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised"
+                    },
+                    "404": {
+                        "description": "Comment Not Found"
                     }
                 },
                 "security": [

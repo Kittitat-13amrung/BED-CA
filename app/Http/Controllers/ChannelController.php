@@ -8,6 +8,7 @@ use App\Http\Resources\ChannelResource;
 use App\Http\Resources\YoutubeVideoResource;
 use App\Models\Channel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -27,15 +28,48 @@ class ChannelController extends Controller
      *     path="/api/channels",
      *     description="Displays all the youtube videos",
      *     tags={"Channels"},
+     *          @OA\Parameter(
+     *          name="orderBy",
+     *          description="orderBy allows data to be re-arrange in the order of descending order of id, name, created_at, and subscribers.",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string")
+     *          ),
+     *          @OA\Parameter(
+     *          name="random",
+     *          description="retrieve data and pluck it in random order.",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean")
+     *          ),
+     *          @OA\Parameter(
+     *          name="subscribers",
+     *          description="retrieve data by filtering the channels that has their subscribers below the specified threshold.",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer")
+     *          ),
+     *          @OA\Parameter(
+     *          name="year",
+     *          description="retrieve data by filtering the channels that are made in the specified year.",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer")
+     *          ),
+     *          @OA\Parameter(
+     *          name="hasVideos",
+     *          description="retrieve data by filtering the channels that have videos.",
+     *          in="query",
+     *          @OA\Schema(
+     *              type="enum",
+     *              enum={"yes","no"}
+     *              ),
+     *          ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation, Returns a list of Books in JSON format",
      *          @OA\JsonContent(ref="#/components/schemas/Channel")  
      *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden"
@@ -45,13 +79,11 @@ class ChannelController extends Controller
      */
     public function index(Request $request)
     {
-
-
         // Query Eloquent Building
         $channels = Channel::query();
 
-        if ($request->query()) {
-
+        if ($request->query()) { //if there is a query
+            // switch cases if orderBy matches below
             switch ($request->get('orderBy')) {
                 case 'desc':
                     $channels->orderBy('id', 'desc');
@@ -65,37 +97,27 @@ class ChannelController extends Controller
                 case 'created_at':
                     $channels->orderBy('created_at');
                     break;
-                case 'likes':
-                    $channels->orderBy('likes');
-                    break;
-                case 'dislikes':
-                    $channels->orderBy('dislikes');
-                    break;
             }
 
+            // get data in random order
             if ($request->get('random')) {
                 $channels->inRandomOrder()->get();
             }
 
-            if ($request->get('likes')) {
-                $channels->where('likes', '<=', $request->get('likes'));
+            // get data by filtering the amount of subscribers
+            if ($request->get('subscribers')) {
+                $channels->where('subscribers', '<=', $request->get('subscribers'));
             }
 
-            if ($request->get('dislikes')) {
-                $channels->where('dislikes', '<=', $request->get('likes'));
+            // get data by fitering the creation year
+            if ($request->get('year')) {
+                $channels->whereYear('created_at', $request->get('year'));
             }
 
-            if ($request->get('created_at')) {
-                $channels->where('created_at', '<=', $request->get('created_at'));
-            }
-
-            if ($request->get('updated_at')) {
-                $channels->where('updated_at', '<=', $request->get('created_at'));
-            }
-
-            if ($request->get('hasVideo') === "yes") {
+            // get data by filtering if the channels have videos
+            if ($request->get('hasVideos') === "yes") {
                 $channels->has('videos')->get();
-            } else {
+            } else if ($request->get('hasVideos') === "no") {
                 $channels->doesntHave('videos')->get();
             }
         }
@@ -105,7 +127,6 @@ class ChannelController extends Controller
 
         // responds in JSON format the collection of data
         return ChannelResource::collection($channels->paginate(10))->response();
-        // return new ChannelCollection($channels->paginate(50));
     }
 
     /**
@@ -154,10 +175,10 @@ class ChannelController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        // Implemented in AuthController
-    }
+    // public function store(Request $request)
+    // {
+    //     // Implemented in AuthController
+    // }
 
     /**
      * Display the specified channel resource using its ID.
@@ -191,8 +212,15 @@ class ChannelController extends Controller
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
-    public function show(Channel $channel)
+    public function show($id)
     {
+        // retreive all the comments using the id implemented from the URL
+        try {
+            $channel = Channel::findOrFail($id);
+        } catch (ModelNotFoundException $ex) { //if channel doesn't exists throw an error
+            return response()->json(["message" => "The channel with id " . $id . " cannot be found in our database.", "status" => "404"], Response::HTTP_NOT_FOUND);
+        };
+
         // eager loads the channel with selected ID and its relationships
         return new ChannelResource($channel->loadMissing(['videos', 'videos.comments']));
     }
@@ -292,7 +320,7 @@ class ChannelController extends Controller
      */
     public function update(ChannelRequest $request)
     {
-        // To be implemented in CA2
+        // update the bearer token user info
         $channel = Channel::findOrFail(auth()->user()->id);
 
         $channel->update($request->all());
@@ -308,10 +336,8 @@ class ChannelController extends Controller
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Channel $channel)
-    {
-        // To be implemented in CA2
-        $channel = Channel::findOrFail(auth()->user()->id);
-        $channel->delete();
-    }
+    // public function destroy(Channel $channel)
+    // {
+    //     // Implemented in AuthController
+    // }
 }

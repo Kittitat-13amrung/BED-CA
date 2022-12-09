@@ -26,14 +26,15 @@ class Comments extends Model
 
     // comments made by channels
     // return comments that belong the the channel
-    public function channels() {
+    public function channels()
+    {
         return $this->belongsToMany(Channel::class, 'channel_comment', 'comment_id', 'channel_id')->withTimestamps();
     }
 
     // comments belong in many videos
-    // return the video that comments belong to
-    public function video() {
-        return $this->belongsTo(YoutubeVideo::class);
+    // return the video that comments belonged to
+    public function video()
+    {
+        return $this->belongsTo(YoutubeVideo::class, 'youtube_video_id', 'id');
     }
-
 }

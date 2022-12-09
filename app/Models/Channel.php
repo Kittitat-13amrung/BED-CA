@@ -21,7 +21,7 @@ class Channel extends Model
         'password'
     ];
 
-        /**
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -41,12 +41,14 @@ class Channel extends Model
     ];
 
     // connects a One to Many relationship (a channel has many videos) 
-    public function videos() {
+    public function videos()
+    {
         return $this->hasMany(YoutubeVideo::class);
     }
 
     // connects a Many to Many relationship (channels have comments)
-    public function comments() {
+    public function comments()
+    {
         return $this->belongsToMany(Comments::class, 'channel_comment', 'channel_id', 'comment_id');
     }
 
@@ -54,5 +56,4 @@ class Channel extends Model
     {
         return $this->morphOne(Image::class, 'imageable');
     }
-
 }

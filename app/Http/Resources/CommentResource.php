@@ -18,16 +18,17 @@ class CommentResource extends JsonResource
     {
         // retrieve channel that commented on the video
         $channel = new ChannelResource($this->channels[0]);
-        // dd($this->channel);
+        $video = new YoutubeVideoResource($this->video);
+        // dd($this->video);
 
         return [
             'id' => $this->id,
             'text' => $this->comment,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
-            'commented_at' => $this->updated_at->diffForHumans(),
-            'belongsToVideo' => $this->youtube_video_id,
-            'channel' => $channel,
+            'created_at' => $this->updated_at->diffForHumans(),
+            'belongs_to_video' => $video,
+            'belongs_to_channel' => $channel,
         ];
     }
 }

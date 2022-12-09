@@ -15,7 +15,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['only' => ['channel', 'logout']]);
+        $this->middleware('auth:sanctum', ['only' => ['channel', 'deleteChannel', 'logout']]);
     }
 
     /**
@@ -69,6 +69,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Validate the requests
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|min:3',
@@ -76,6 +77,7 @@ class AuthController extends Controller
                 'password' => 'required|min:6'
             ]);
 
+            // If fails
             if ($validator->fails()) {
                 //return JSON response
                 return response()->json([
@@ -85,6 +87,7 @@ class AuthController extends Controller
                 ], Response::HTTP_NOT_ACCEPTABLE);
             };
 
+            // IF success create channel
             $channel = Channel::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -94,12 +97,13 @@ class AuthController extends Controller
             // create a token from the created channel - access in personal_access_token table 
             $token = $channel->createToken('channel-access-token')->plainTextToken;
 
+            // Return successful operation as JSON
             return response()->json([
                 'status' => Response::HTTP_CREATED,
                 'message' => 'Channel has been successfully registered',
                 'token' => $token
             ], Response::HTTP_CREATED);
-        } catch (\Throwable $th) {
+        } catch (\Throwable $th) { //if server fails returns error messages
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => $th->getMessage()
@@ -137,7 +141,7 @@ class AuthController extends Controller
      *            ),
      *      @OA\Response(
      *          response=200,
-     *          description="Successful operation",
+     *          description="Successful logged in",
      *          @OA\JsonContent(ref="#/components/schemas/auth")
      *       ),
      *      @OA\Response(
@@ -169,8 +173,6 @@ class AuthController extends Controller
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
-            // dd(Auth::attempt(['email' => $request->email, 'password' => $request->password]));
-
             if (!Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_ACCEPTABLE,
@@ -195,7 +197,7 @@ class AuthController extends Controller
     /**
      * Get details about your channel.
      *
-     * @OA\Post(
+     * @OA\Get(
      *     path="/api/auth/channel",
      *     description="Get everything related to your account such as name, subscriber, videos, comments etc.",
      *     summary="Get details about your channel",
@@ -203,7 +205,7 @@ class AuthController extends Controller
      *    security={{ "bearerAuth": {} }},
      *      @OA\Response(
      *          response=200,
-     *          description="Successful operation",
+     *          description="Successful operation returns JSON format",
      *          @OA\JsonContent(
      *            allOf={
      *              @OA\Schema(ref="#/components/schemas/Channel"),
@@ -224,15 +226,59 @@ class AuthController extends Controller
 
     public function channel()
     {
-
+        // Get everything about the channel, including comments and videos
         $channel = new ChannelResource(auth()->user()->loadMissing(['videos', 'videos.comments']));
         $comments = CommentResource::collection(auth()->user()->comments);
 
 
+        // Return results as JSON
         return response()->json([
             'channel' => $channel,
             'comments' => $comments
         ], Response::HTTP_OK);
+    }
+
+    /**
+     * Delete your channel.
+     *
+     * @OA\Delete(
+     *     path="/api/auth/channel",
+     *     description="Delete your own channel from the database, including the videos, and comments by the channel",
+     *     summary="Delete your channel",
+     *     tags={"Authentication"},
+     *    security={{ "bearerAuth": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Channel has been successfully deleted",
+     *          @OA\JsonContent(
+     *            ref="#/components/schemas/auth",
+     *          ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Server Errors"
+     *      ),
+     * ),
+     */
+
+    public function deleteChannel()
+    {
+        // Find the channel and delete
+        $channel = Channel::findOrFail(auth()->user()->id);
+        $channel->delete();
+        // Return successful operation message
+        return response()->json([
+            "message" => "your channel has been succesfully deleted",
+            "status" => Response::HTTP_ACCEPTED
+        ], Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -246,7 +292,7 @@ class AuthController extends Controller
      *      
      *      @OA\Response(
      *          response=200,
-     *          description="Successful operation",
+     *          description="Channel has been successfully logged out",
      *          @OA\JsonContent(
      *            ref="#/components/schemas/auth",
      *          ),
@@ -263,7 +309,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-
+        // Delete bearer token once endpoint is called
         $request->user()->tokens()->delete();
         return response()->json(['message' => "The token has been successfully deleted", "status" => Response::HTTP_ACCEPTED], Response::HTTP_ACCEPTED);
     }

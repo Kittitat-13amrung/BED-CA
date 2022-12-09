@@ -39,6 +39,4 @@ class YoutubeVideoResource extends JsonResource
             'comment' => $comments,
         ];
     }
-
-
 }

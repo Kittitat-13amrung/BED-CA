@@ -25,15 +25,15 @@ class ChannelRequest extends FormRequest
     {
         $method = $this->method();
 
-        if($method === "PUT") {
+        if ($method === "PUT") {
             return [
                 "name" => "required|min:3",
                 "email" => "required|email|unique:channels",
-                "password" => "required|min:6"
+                "password" => "required|min:6",
             ];
         };
 
-        if($method === "PATCH") {
+        if ($method === "PATCH") {
             return [
                 "name" => "sometimes|min:3",
                 "email" => "sometimes|email|unique:channels",

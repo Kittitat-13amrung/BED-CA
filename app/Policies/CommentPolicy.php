@@ -68,6 +68,7 @@ class CommentPolicy
      */
     public function delete(Channel $channel, Comments $comment)
     {
+        // dd($comment->channels()->get()->first()->id);
         return $channel->id === $comment->channels()->get()->first()->id
             ? Response::allow()
             : Response::deny();
