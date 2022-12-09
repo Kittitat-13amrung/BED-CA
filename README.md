@@ -15,15 +15,15 @@ you can do so with ```{your domain}/api/documentation```
 
 And when you have everything set up and run the server and access the site, it should return something like this:
 
-<img src="https://iili.io/bM7bPp.png" width="900"/>
+<img src="https://user-images.githubusercontent.com/91548046/206813703-7d509fb1-adcd-4d81-a119-3e8f858fa7ee.png" width="900"/>
 
 - ### Entity Relationships Diagram
 <img src="https://iili.io/bMwy0X.png"/>
 
 ## Sample Data Retrieved Using Insomnia
-<img src="https://user-images.githubusercontent.com/91548046/199134571-e0148392-4ba1-4960-a106-23ddbf77acda.png" width="600"/>
-<img src="https://user-images.githubusercontent.com/91548046/199134618-f3c6156e-395e-47c9-9c55-972983f66fce.png" width="600"/>
-<img src="https://user-images.githubusercontent.com/91548046/199134648-52d65114-aa96-4334-9c51-cee72a681346.png" width="600"/>
+<img src="https://user-images.githubusercontent.com/91548046/206813483-5fa502d4-18ba-43ba-961f-beae4ab9d47b.png" width="600"/>
+<img src="https://user-images.githubusercontent.com/91548046/206813542-9e6efc2d-eee2-4433-9e26-444ed1ee2d4d.png" width="600"/>
+<img src="https://user-images.githubusercontent.com/91548046/206813575-2ca519cf-0ee9-40a7-a8d6-a0805ad347f8.png" width="600"/>
 
 
 ### Featured I have implemented are:
@@ -32,3 +32,7 @@ And when you have everything set up and run the server and access the site, it s
 3. Created components in Swagger so it could be easily reusable in other Controllers I have created.
 4. Added extra API resources to retrieve data from the Id parameter i.e. getting all the comments from a specific video, gets all videos made by a specific channel etc.
 5. Using each() functionality in Seeders to create nested factories to automatically assign the fake data with the channel that made those videos and populate the videos with comments.
+6. Authentication using Sanctum
+7. CRUD for all Videos, Comments, and Channel Controllers.
+8. Policy and Request
+9. Only channel that created those resources are allowed to update, delete them.
